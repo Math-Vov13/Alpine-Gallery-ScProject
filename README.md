@@ -72,13 +72,17 @@ Pour toute question, suggestion ou problème :
 - **Nom** : Joao Gabriel MARQUES DINIS
 - **Email** : joao-gabriel.marques-dinis@efrei.net
 - **GitHub** : [GitHub Joao](https://github.com/MARQUESDINISJoaoGabriel) ou [KyaShift](https://github.com/KyaShift)
+
 <br>
 <br>
+
 - **Nom** : ACHOUCHI Rayane
 - **Email** : achouchi.rayane@efrei.net
 - **GitHub** : [Github Rayane](https://github.com/RayaneChCh-dev/)
+
 <br>
 <br>
-- **Nom** : 
-- **Email** : @efrei.net
-- **GitHub** : [Github PRENOM](lien)
+
+- **Nom** : VOVARD Mathéo
+- **Email** : matheo.vovard@efrei.net
+- **GitHub** : [Github Matheo](https://github.com/Math-Vov13)
