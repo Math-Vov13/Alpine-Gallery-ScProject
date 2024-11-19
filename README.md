@@ -61,9 +61,9 @@ npm start
 
 ## Membres et rôles
 
-- **MARQUES DINIS Joao Gabriel** :
-- **ACHOUCHI Rayane** :
-- **VOVARD Mathéo** :
+- **MARQUES DINIS Joao Gabriel**
+- **ACHOUCHI Rayane**
+- **VOVARD Mathéo**
 
 ---
 
