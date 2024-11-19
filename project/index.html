@@ -101,25 +101,28 @@
                     return;
                 }
 
-                const foundUser = this.users.find(u => u.email === this.user.email);
-
-                if (foundUser) {
-                    if (foundUser.password === this.user.password) {
-                        this.loginMessage = "Connexion réussie ! Bienvenue " + foundUser.name;
-                        console.log("Connexion réussie ! Bienvenue " + foundUser.name);
-                        window.location.href = "dashboard.html";
-                        
+                fetch('http://localhost:8000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.user)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.loginMessage = "Connexion réussie ! Bienvenue " + data.user.name;
+                        console.log("Connexion réussie ! Bienvenue " + data.user.name);
+                        window.location.href = "dashboard.html?user=" + encodeURIComponent(JSON.stringify(data.user));
                     } else {
-                        this.loginMessage = "Mot de passe incorrect.";
-                        console.log("Err mdp")
+                        this.loginMessage = data.message;
+                        console.log(data.message)
                     }
-                } else {
-                    this.loginMessage = "Compte introuvable. Vous allez être redirigé vers l'inscription.";
-                    console.log("compte non trouvé")
-                    setTimeout(() => {
-                        this.toggleForm();
-                    }, 2000);
-                }
+                })
+                .catch(error => {
+                    this.loginMessage = "Erreur inconnue.";
+                    console.log("Erreur inconnue."+error)
+                });
                 this.clearForm();
             },
 
@@ -130,20 +133,28 @@
                     return;
                 }
 
-                const foundUser = this.users.find(u => u.email === this.user.email);
-                if (foundUser) {
-                    this.registerMessage = "Cet email est déjà utilisé.";
-                    console.log(foundUser.email+" est déjà utilisé")
-                } else {
-                    this.users.push({
-                        name: this.user.name,
-                        email: this.user.email,
-                        password: this.user.password
-                    });
-                    this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
-                    console.log(":D")
-                    this.toggleForm();
-                }
+                fetch('http://localhost:8000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.user)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+                        console.log(":D")
+                        this.toggleForm();
+                    } else {
+                        this.registerMessage = data.message;
+                        console.log(data.message)
+                    }
+                })
+                .catch(error => {
+                    this.registerMessage = "Erreur inconnue.";
+                    console.log("Erreur inconnue."+error)
+                });
                 this.clearForm();
             }
         }))
