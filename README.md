@@ -46,6 +46,8 @@ Lancez l'application :
 npm start
 ```
 
+4. Import ALpineJS : `import Alpine from "./node_modules/alpinejs/dist/module.esm.js"`
+
 ## Contribution
 
 1. Forkez le dépôt.
