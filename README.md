@@ -74,10 +74,6 @@ Pour toute question, suggestion ou problème :
 - **Email** : joao-gabriel.marques-dinis@efrei.net
 - **GitHub** : [GitHub Joao](https://github.com/MARQUESDINISJoaoGabriel) ou [KyaShift](https://github.com/MARQUESDINISJoaoGabriel)
 
-- **Nom** : Mathieu Barraqué
-- **Email** : matthieu.barraque@efrei.net
-- **GitHub** : [GitHub Matthieu](https://github.com/MatthieuBarraque)
-
 - **Nom** : 
 - **Email** : @efrei.net
 - **GitHub** : [Github PRENOM](lien)
