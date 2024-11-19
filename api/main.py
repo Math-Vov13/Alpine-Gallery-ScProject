@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Form
+from fastapi.middleware.cors import CORSMiddleware
 
 from typing import Annotated
 from pydantic import BaseModel, Field
@@ -7,10 +8,18 @@ from db import *
 
 
 app = FastAPI(root_path="/api/v1", root_path_in_servers="/api/v1")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = ["http://127.0.0.1:8000"],
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"]
+)
 
 
 class RegisterModel(BaseModel):
+    model_config = {"extra": "forbid"}
+
     name: str = Field(
         title="Name", max_length=20
     )
@@ -23,6 +32,8 @@ class RegisterModel(BaseModel):
 
 
 class LoginModel(BaseModel):
+    model_config = {"extra": "forbid"}
+
     email: str = Field(
         title="Email", max_length=50
     )
