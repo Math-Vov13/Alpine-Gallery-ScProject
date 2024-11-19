@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<main x-data="authForm">
+<main x-data="authForm" class="app">
     <template x-if="isLogin">
         <form @submit.prevent="handleLogin" class="form">
             <h2>Login</h2>
@@ -107,6 +107,8 @@
                     if (foundUser.password === this.user.password) {
                         this.loginMessage = "Connexion réussie ! Bienvenue " + foundUser.name;
                         console.log("Connexion réussie ! Bienvenue " + foundUser.name);
+                        window.location.href = "dashboard.html";
+                        
                     } else {
                         this.loginMessage = "Mot de passe incorrect.";
                         console.log("Err mdp")
