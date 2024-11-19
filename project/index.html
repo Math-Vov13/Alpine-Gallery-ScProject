@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/index.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>Login & Register</title>
+</head>
+<body>
+
+<main x-data="authForm">
+    <template x-if="isLogin">
+        <form @submit.prevent="handleLogin" class="form">
+            <h2>Login</h2>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" x-model="user.email">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" x-model="user.password">
+            </div>
+            <button type="submit">Login</button>
+            <p x-text="loginMessage" class="message"></p>
+            <p>Pas encore inscrit ? <a href="#" @click.prevent="toggleForm">S'inscrire</a></p>
+        </form>
+    </template>
+
+    <template x-if="!isLogin">
+        <form @submit.prevent="handleRegister" class="form">
+            <h2>Register</h2>
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" x-model="user.name">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" x-model="user.email">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" x-model="user.password">
+            </div>
+            <button type="submit">Register</button>
+            <p x-text="registerMessage" class="message"></p>
+            <p>Déjà inscrit ? <a href="#" @click.prevent="toggleForm">Se connecter</a></p>
+        </form>
+    </template>
+</main>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('authForm', () => ({
+            isLogin: true,
+            user: {
+                name: '',
+                email: '',
+                password: ''
+            },
+            registerMessage: '',
+            loginMessage: '',
+            users: [],
+
+            toggleForm() {
+                this.isLogin = !this.isLogin;
+                this.clearForm();
+                this.clearMessages();
+            },
+
+            clearForm() {
+                this.user.name = '';
+                this.user.email = '';
+                this.user.password = '';
+            },
+
+            clearMessages() {
+                this.registerMessage = '';
+                this.loginMessage = '';
+            },
+
+            validateFields() {
+                if (this.isLogin) {
+                    if (!this.user.email || !this.user.password) {
+                        return false;
+                    }
+                }
+                if (!this.isLogin) {
+                    if (!this.user.name || !this.user.email || !this.user.password) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            handleLogin() {
+
+                if (!this.validateFields()) {
+                    this.loginMessage = "Veuillez remplir tous les champs obligatoires.";
+                    console.log("Champs incomplets au : Login")
+                    return;
+                }
+
+                const foundUser = this.users.find(u => u.email === this.user.email);
+
+                if (foundUser) {
+                    if (foundUser.password === this.user.password) {
+                        this.loginMessage = "Connexion réussie ! Bienvenue " + foundUser.name;
+                        console.log("Connexion réussie ! Bienvenue " + foundUser.name);
+                    } else {
+                        this.loginMessage = "Mot de passe incorrect.";
+                        console.log("Err mdp")
+                    }
+                } else {
+                    this.loginMessage = "Compte introuvable. Vous allez être redirigé vers l'inscription.";
+                    console.log("compte non trouvé")
+                    setTimeout(() => {
+                        this.toggleForm();
+                    }, 2000);
+                }
+                this.clearForm();
+            },
+
+            handleRegister() {
+                if (!this.validateFields()) {
+                    this.registerMessage = "Veuillez remplir tous les champs obligatoires.";
+                    console.log("Champs incomplets au : Register")
+                    return;
+                }
+
+                const foundUser = this.users.find(u => u.email === this.user.email);
+                if (foundUser) {
+                    this.registerMessage = "Cet email est déjà utilisé.";
+                    console.log(foundUser.email+" est déjà utilisé")
+                } else {
+                    this.users.push({
+                        name: this.user.name,
+                        email: this.user.email,
+                        password: this.user.password
+                    });
+                    this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+                    console.log(":D")
+                    this.toggleForm();
+                }
+                this.clearForm();
+            }
+        }))
+    })
+</script>
+
+<style>
+    .message {
+        color: rgb(239, 151, 151);
+        font-size: 0.9em;
+    }
+</style>
+
+</body>
+</html>
