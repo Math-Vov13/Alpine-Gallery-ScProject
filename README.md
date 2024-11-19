@@ -1,4 +1,3 @@
-```markdown
 # AlpineEFREI-TeamZeta
 [PLACEHOLDER DU PROJET]
 
@@ -80,4 +79,3 @@ Pour toute question, suggestion ou problème :
 - **Nom** : VOVARD Mathéo
 - **Email** : matheo.vovard@efrei.net
 - **GitHub** : [Github Matheo](https://github.com/Math-Vov13)
-```
