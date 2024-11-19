@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>Dashboard</h1>
+        <p>Welcome, <span id="user-name"></span></p>
+    </div>
+
+    <script>
+        // Get the user object from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const user = JSON.parse(decodeURIComponent(urlParams.get('user')));
+
+        // Display the user's name
+        document.getElementById('user-name').textContent = user.name;
+    </script>
+</body>
+</html>
