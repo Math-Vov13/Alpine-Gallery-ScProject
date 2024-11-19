@@ -61,7 +61,7 @@ npm start
 
 - **MARQUES DINIS Joao Gabriel** :
 - **ACHOUCHI Rayane** :
-- **Nom et Prénom** :
+- **VOVARD Mathéo** :
 
 ---
 
