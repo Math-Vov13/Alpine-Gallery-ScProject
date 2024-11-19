@@ -61,7 +61,7 @@ npm start
 
 - **MARQUES DINIS Joao Gabriel** :
 - **ACHOUCHI Rayane** :
-- **Nom et Prénom 4** :
+- **Nom et Prénom** :
 
 ---
 
@@ -69,13 +69,13 @@ npm start
 
 Pour toute question, suggestion ou problème :
 
-- **Nom** : Joao Gabriel
+- **Nom** : Joao Gabriel MARQUES DINIS
 - **Email** : joao-gabriel.marques-dinis@efrei.net
 - **GitHub** : [GitHub Joao](https://github.com/MARQUESDINISJoaoGabriel) ou [KyaShift](https://github.com/KyaShift)
 
-- **Nom** : 
-- **Email** : @efrei.net
-- **GitHub** : [Github PRENOM](lien)
+- **Nom** : ACHOUCHI Rayane
+- **Email** : achouchi.rayane@efrei.net
+- **GitHub** : [Github Rayane]([lien](https://github.com/RayaneChCh-dev/))
 
 - **Nom** : 
 - **Email** : @efrei.net
