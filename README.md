@@ -72,7 +72,7 @@ Pour toute question, suggestion ou problème :
 
 - **Nom** : Joao Gabriel
 - **Email** : joao-gabriel.marques-dinis@efrei.net
-- **GitHub** : [GitHub Joao](https://github.com/MARQUESDINISJoaoGabriel) ou [KyaShift](https://github.com/MARQUESDINISJoaoGabriel)
+- **GitHub** : [GitHub Joao](https://github.com/MARQUESDINISJoaoGabriel) ou [KyaShift](https://github.com/KyaShift)
 
 - **Nom** : 
 - **Email** : @efrei.net
