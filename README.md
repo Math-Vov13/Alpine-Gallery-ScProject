@@ -75,7 +75,7 @@ Pour toute question, suggestion ou problème :
 
 - **Nom** : ACHOUCHI Rayane
 - **Email** : achouchi.rayane@efrei.net
-- **GitHub** : [Github Rayane]([lien](https://github.com/RayaneChCh-dev/))
+- **GitHub** : [Github Rayane](https://github.com/RayaneChCh-dev/)
 
 - **Nom** : 
 - **Email** : @efrei.net
