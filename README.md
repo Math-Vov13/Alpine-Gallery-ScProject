@@ -30,8 +30,8 @@
 1. Clonez ce dépôt :
    
    ```bash
-   git clone https://github.com/nom-utilisateur/nom-du-projet.git
-   cd nom-du-projet
+   git clone https://github.com/MARQUESDINISJoaoGabriel/AlpineEFREI-TeamZeta
+   cd AlpineEFREI-TeamZeta
    ```
    
 2. Installez les dépendances requises :
