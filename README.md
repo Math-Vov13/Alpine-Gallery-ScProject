@@ -59,9 +59,8 @@ npm start
 
 ## Membres et rôles
 
-- **BARRAQUÉ Matthieu** :
 - **MARQUES DINIS Joao Gabriel** :
-- **Nom et Prénom 3** :
+- **ACHOUCHI Rayane** :
 - **Nom et Prénom 4** :
 
 ---
