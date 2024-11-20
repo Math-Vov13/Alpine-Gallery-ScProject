@@ -53,128 +53,94 @@
 
 <script>
     document.addEventListener('alpine:init', () => {
-        // Set the base URL for the API
-        axios.defaults.baseURL = 'http://localhost:8000/api/v1';
-        window.authForm = Alpine.data('authForm', () => ({
-            isLogin: true,
-            user: {
-                name: '',
-                email: '',
-                password: ''
-            },
-            registerMessage: '',
-            loginMessage: '',
-            users: [],
+    axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+    window.authForm = Alpine.data('authForm', () => ({
+        isLogin: true,
+        user: {
+            name: '',
+            email: '',
+            password: ''
+        },
+        registerMessage: '',
+        loginMessage: '',
+        users: [],
 
-            toggleForm() {
-                this.isLogin = !this.isLogin;
-                this.clearForm();
-                this.clearMessages();
-            },
-            // Function to validate the fields
-            validateFields() {
-                if (this.isLogin) {
-                    if (!this.user.email || !this.user.password) {
-                        return false;
-                    }
-                }
-                if (!this.isLogin) {
-                    if (!this.user.name || !this.user.email || !this.user.password) {
-                        return false;
-                    }
-                }
-                return true;
-            },
-            clearForm() {
-                this.user.name = '';
-                this.user.email = '';
-                this.user.password = '';
-            },
+        toggleForm() {
+            this.isLogin = !this.isLogin;
+            this.clearForm();
+            this.clearMessages();
+        },
 
-            clearMessages() {
-                this.registerMessage = '';
-                this.loginMessage = '';
-            },
+        validateFields() {
+            if (this.isLogin) {
+                return this.user.email && this.user.password;
+            }
+            return this.user.name && this.user.email && this.user.password;
+        },
 
-            validateFields() {
-                if (this.isLogin) {
-                    if (!this.user.email || !this.user.password) {
-                        return false;
-                    }
-                }
-                if (!this.isLogin) {
-                    if (!this.user.name || !this.user.email || !this.user.password) {
-                        return false;
-                    }
-                }
-                return true;
-            },
+        clearForm() {
+            this.user.name = '';
+            this.user.email = '';
+            this.user.password = '';
+        },
 
-            handleLogin() {
+        clearMessages() {
+            this.registerMessage = '';
+            this.loginMessage = '';
+        },
 
-                if (!this.validateFields()) {
-                    this.loginMessage = "Veuillez remplir tous les champs obligatoires.";
-                    console.log("Champs incomplets au : Login")
-                    return;
-                }
+        handleLogin() {
+            if (!this.validateFields()) {
+                this.loginMessage = "Veuillez remplir tous les champs obligatoires.";
+                console.log("Champs incomplets au : Login");
+                return;
+            }
 
-                fetch('http://localhost:8000/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.user)
-                })
+            axios.post('/login', this.user)
                 .then(response => {
                     if (response.data.success) {
-                        this.loginMessage = "Connexion réussie ! Bienvenue " + response.data.user.name;
-                        console.log("Connexion réussie ! Bienvenue " + response.data.user.name);
+                        this.loginMessage = `Connexion réussie ! Bienvenue ${response.data.user.name}`;
+                        console.log(this.loginMessage);
                         window.location.href = "dashboard.html?user=" + encodeURIComponent(JSON.stringify(response.data.user));
                     } else {
                         this.loginMessage = response.data.message;
-                        console.log(response.data.message)
+                        console.log(response.data.message);
                     }
                 })
                 .catch(error => {
+                    console.error(error.response.data || error.message);
                     this.loginMessage = "Erreur inconnue.";
-                    console.log("Erreur inconnue."+error)
                 });
-                this.clearForm();
-            },
+            this.clearForm();
+        },
 
-            handleRegister() {
-                if (!this.validateFields()) {
-                    this.registerMessage = "Veuillez remplir tous les champs obligatoires.";
-                    console.log("Champs incomplets au : Register")
-                    return;
-                }
+        handleRegister() {
+            if (!this.validateFields()) {
+                this.registerMessage = "Veuillez remplir tous les champs obligatoires.";
+                console.log("Champs incomplets au : Register");
+                return;
+            }
 
-                fetch('http://localhost:8000/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.user)
-                })
+            axios.post('/register', this.user)
                 .then(response => {
                     if (response.data.success) {
                         this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
-                        console.log(":D")
+                        console.log(response.data.message);
                         this.toggleForm();
                     } else {
                         this.registerMessage = response.data.message;
-                        console.log(authForm.registerMessage)
+                        console.log(response.data.message);
                     }
                 })
                 .catch(error => {
-                    console.log(error.response.data);
+                    console.error(error.response.data || error.message);
                     this.registerMessage = "Erreur inconnue.";
-                    console.log("Erreur inconnue."+error)
                 });
-                this.clearForm();
-},
-        }))
-    })
+            this.clearForm();
+        },
+    }));
+});
+
     
 </script>
 
