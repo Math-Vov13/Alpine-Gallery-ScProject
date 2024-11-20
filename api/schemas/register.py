@@ -13,5 +13,5 @@ class RegisterModel(BaseModel):
         title="Email", max_length=50, min_length=10
     )
     password: str = Field(
-        title="Password", max_length=50, min_length=10
+        title="Password", max_length=50, min_length=5
     )
