@@ -22,6 +22,8 @@ Login page. Tout simplement.
 
 ## Installation
 
+pour l'API, veuillez suivre les instructions dans ce [README.md](/api/README.md)
+
 ### Prérequis
 - VSC, AlpineJS,
 - Autres dépendances spécifiques ou optionelles : Firebase

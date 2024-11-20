@@ -101,12 +101,18 @@
                     return;
                 }
 
-                fetch('http://localhost:8000/login', {
+                const formData = new FormData();
+                formData.append('email', this.user.email);
+                formData.append('password', this.user.password);
+
+                console.log('FormData values:', {
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                });
+
+                fetch('http://localhost:8000/api/v1/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.user)
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -133,12 +139,14 @@
                     return;
                 }
 
-                fetch('http://localhost:8000/register', {
+                const formData = new FormData();
+                formData.append('name', this.user.name);
+                formData.append('email', this.user.email);
+                formData.append('password', this.user.password);
+
+                fetch('http://localhost:8000/api/v1/register', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.user)
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
