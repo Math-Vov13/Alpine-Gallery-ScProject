@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/index.css">
+    <script defer src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <title>Login & Register</title>
+</head>
+<body>
+
+<main x-data="authForm" class="app">
+    <template x-if="isLogin">
+        <form @submit.prevent="handleLogin" class="form">
+            <h2>Login</h2>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" x-model="user.email">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" x-model="user.password">
+            </div>
+            <button type="submit">Login</button>
+            <p x-text="loginMessage" class="message"></p>
+            <p>Pas encore inscrit ? <a href="#" @click.prevent="toggleForm">S'inscrire</a></p>
+        </form>
+    </template>
+
+    <template x-if="!isLogin">
+        <form @submit.prevent="handleRegister" class="form">
+            <h2>Register</h2>
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" x-model="user.name">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" x-model="user.email">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" x-model="user.password">
+            </div>
+            <button type="submit">Register</button>
+            <p x-text="registerMessage" class="message"></p>
+            <p>Déjà inscrit ? <a href="#" @click.prevent="toggleForm">Se connecter</a></p>
+        </form>
+    </template>
+</main>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        // Set the base URL for the API
+        axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+        window.authForm = Alpine.data('authForm', () => ({
+            isLogin: true,
+            user: {
+                name: '',
+                email: '',
+                password: ''
+            },
+            registerMessage: '',
+            loginMessage: '',
+            users: [],
+
+            toggleForm() {
+                this.isLogin = !this.isLogin;
+                this.clearForm();
+                this.clearMessages();
+            },
+            // Function to validate the fields
+            validateFields() {
+                if (this.isLogin) {
+                    if (!this.user.email || !this.user.password) {
+                        return false;
+                    }
+                }
+                if (!this.isLogin) {
+                    if (!this.user.name || !this.user.email || !this.user.password) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            clearForm() {
+                this.user.name = '';
+                this.user.email = '';
+                this.user.password = '';
+            },
+
+            clearMessages() {
+                this.registerMessage = '';
+                this.loginMessage = '';
+            },
+
+            validateFields() {
+                if (this.isLogin) {
+                    if (!this.user.email || !this.user.password) {
+                        return false;
+                    }
+                }
+                if (!this.isLogin) {
+                    if (!this.user.name || !this.user.email || !this.user.password) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            handleLogin() {
+
+                if (!this.validateFields()) {
+                    this.loginMessage = "Veuillez remplir tous les champs obligatoires.";
+                    console.log("Champs incomplets au : Login")
+                    return;
+                }
+
+                axios.post('http://localhost:8000/login', this.user, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.data.success) {
+                        this.loginMessage = "Connexion réussie ! Bienvenue " + response.data.user.name;
+                        console.log("Connexion réussie ! Bienvenue " + response.data.user.name);
+                        window.location.href = "dashboard.html?user=" + encodeURIComponent(JSON.stringify(response.data.user));
+                    } else {
+                        this.loginMessage = response.data.message;
+                        console.log(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    this.loginMessage = "Erreur inconnue.";
+                    console.log("Erreur inconnue."+error)
+                });
+                this.clearForm();
+            },
+
+            handleRegister() {
+                if (!this.validateFields()) {
+                    this.registerMessage = "Veuillez remplir tous les champs obligatoires.";
+                    console.log("Champs incomplets au : Register")
+                    return;
+                }
+
+                axios.post('/register', {
+                    name: this.user.name,
+                    email: this.user.email,
+                    password: this.user.password
+                })
+                .then(response => {
+                    if (response.data.success) {
+                        this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+                        console.log(":D")
+                        this.toggleForm();
+                    } else {
+                        this.registerMessage = response.data.message;
+                        console.log(authForm.registerMessage)
+                    }
+                })
+                .catch(error => {
+                    console.log(error.response.data);
+                    this.registerMessage = "Erreur inconnue.";
+                    console.log("Erreur inconnue."+error)
+                });
+                this.clearForm();
+},
+        }))
+    })
+    
+</script>
+
+<style>
+    .message {
+        color: rgb(239, 151, 151);
+        font-size: 0.9em;
+    }
+</style>
+
+</body>
+</html>
+

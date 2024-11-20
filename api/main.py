@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Form
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
@@ -14,6 +14,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
+
 )
 
 @app.get("/")
@@ -32,8 +33,13 @@ async def register(data: RegisterModel):
 @app.post("/login",
           tags=["Account"],
           description="", status_code=status.HTTP_200_OK)
-async def login(data: LoginModel):
+async def login(
+    email: str = Form(...), 
+    password: str = Form(...)
+):
+    data = LoginModel(email=email, password=password)  # Construct the LoginModel manually
     if not await get_account(data):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Not Found!")
     return {"success": True, "message": "Login successful."}
+

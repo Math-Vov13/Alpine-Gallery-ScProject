@@ -95,25 +95,38 @@
                 console.log("Champs incomplets au : Login");
                 return;
             }
-
-            axios.post('/login', this.user)
+        
+            // Create a plain object for form data
+            const loginData = {
+                email: this.user.email,
+                password: this.user.password
+            };
+        
+            // Use Axios to send the data as x-www-form-urlencoded
+            axios.post('/login', new URLSearchParams(loginData))
                 .then(response => {
-                    if (response.data.success) {
-                        this.loginMessage = `Connexion réussie ! Bienvenue ${response.data.user.name}`;
-                        console.log(this.loginMessage);
-                        window.location.href = "dashboard.html?user=" + encodeURIComponent(JSON.stringify(response.data.user));
+                    const data = response.data;
+                    if (data.success) {
+                        this.loginMessage = "Connexion réussie ! Bienvenue " + data.user.name;
+                        console.log("Connexion réussie ! Bienvenue " + data.user.name);
+                        window.location.href = "dashboard.html?user=" + encodeURIComponent(JSON.stringify(data.user));
                     } else {
-                        this.loginMessage = response.data.message;
-                        console.log(response.data.message);
+                        this.loginMessage = data.detail || "Une erreur est survenue.";
+                        console.log(data.detail || "Une erreur est survenue.");
                     }
                 })
                 .catch(error => {
-                    console.error(error.response.data || error.message);
-                    this.loginMessage = "Erreur inconnue.";
+                    if (error.response && error.response.data) {
+                        console.log("Erreur:", error.response.data);
+                        this.loginMessage = error.response.data.detail || "Erreur inconnue.";
+                    } else {
+                        console.log("Erreur inconnue:", error);
+                        this.loginMessage = "Erreur inconnue.";
+                    }
                 });
+            
             this.clearForm();
         },
-
         handleRegister() {
             if (!this.validateFields()) {
                 this.registerMessage = "Veuillez remplir tous les champs obligatoires.";
