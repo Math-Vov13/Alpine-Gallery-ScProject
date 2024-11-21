@@ -1,13 +1,12 @@
-from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
-from endpoints.account import router as routerAcc
-from endpoints.gallery import router as routerGall
+from api import subapp
 
 
-app = FastAPI(root_path="/api/v1", root_path_in_servers="/api/v1")
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:8000", "*"],
@@ -17,15 +16,27 @@ app.add_middleware(
 
 )
 
+templates = Jinja2Templates("..\client")
+
 
 @app.get("/")
-def index():
-    return RedirectResponse(
-        url="/index.html"  # Redirection to the website
+def index(request : Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request}
     )
 
 
+app.mount("/css", StaticFiles(directory= "..\client\css"), name="static")
+app.mount("/api/v1", subapp)
 
-app.mount("/static", StaticFiles(directory= "model\storage"), name="static")
-app.include_router(router= routerAcc)
-app.include_router(router= routerGall)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app:app",
+        host    = "0.0.0.0",
+        port    = 8036, 
+        reload  = True
+    )
