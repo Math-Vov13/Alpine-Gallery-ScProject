@@ -26,17 +26,24 @@ def index(request : Request):
         {"request": request}
     )
 
+@app.get("/board")
+def dashboard(request: Request):
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {"request": request}
+    )
+
 
 app.mount("/css", StaticFiles(directory= "..\client\css"), name="static")
 app.mount("/api/v1", subapp)
 
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(
-        "app:app",
-        host    = "0.0.0.0",
-        port    = 8036, 
-        reload  = True
-    )
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(
+#         "app:app",
+#         host    = "0.0.0.0",
+#         port    = 8036, 
+#         reload  = True
+#     )

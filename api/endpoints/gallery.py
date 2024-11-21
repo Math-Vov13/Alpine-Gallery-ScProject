@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 from fastapi import UploadFile, File
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.responses import FileResponse
 
 from typing import Annotated
+
+from model.media_db import *
 
 router = APIRouter(prefix= "/gallery", tags=["Gallery"])
 
@@ -28,9 +30,11 @@ async def upload_file(media_id: str):
 #     return {'file': file.decode()}
 
 @router.post("/")
-async def create_file(files: Annotated[list[UploadFile], File(description="A file read as UploadFile")]):
+async def create_files(files: Annotated[list[UploadFile] | None, File(description="A file read as UploadFile")]):
+    for file in files:
+        await save_file(file.filename)
     return dict([(file.filename, {'name': file.filename, 'size': file.size}) for file in files])
 
 @router.delete("/{media_id}")
-def aa():
+def delete_file(media_id: str):
     pass
