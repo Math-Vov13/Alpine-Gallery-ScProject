@@ -3,20 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <script defer src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Dashboard</title>
 </head>
 <body>
-    <div>
-        <h1>Dashboard</h1>
-        <p>Welcome, <span id="user-name"></span></p>
+    <div class="dashboard-container" x-data="dashboard">
+        <!-- Title -->
+        <header class="dashboard-header">
+            <h1>Dashboard</h1>
+            <p>Welcome, <span id="user-name"></span></p>
+        </header>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="/dashboard" class="nav-item" :class="{ active: activeTab === 'all' }" @click="changeTab('all')">All Photos</a>
+            <a href="/dashboard/recent" class="nav-item" :class="{ active: activeTab === 'recent' }" @click="changeTab('recent')">Most Recent Photos</a>
+            <a href="/dashboard/deleted" class="nav-item" :class="{ active: activeTab === 'deleted' }" @click="changeTab('deleted')">Deleted Photos</a>
+        </nav>
+
+        <!-- Content -->
+        <section id="content">
+            <div class="card-wrapper">
+                <div class="card import-card" @click="importPhotos()">
+                    <div class="plus-icon">+</div>
+                    <p>Import Photos</p>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
-        // Get the user object from the URL
+        // Dashboard Alpine.js Component
+        const dashboard = () => ({
+            activeTab: 'all',
+            changeTab(tab) {
+                this.activeTab = tab;
+                // Get the content container
+                const content = document.getElementById('content');
+                
+                // Remove any existing content
+                while (content.firstChild) {
+                    content.removeChild(content.firstChild);
+                }
+                
+                // Load the appropriate content
+                if (this.activeTab === 'all') {
+                    // Load all photos
+                    // content.innerHTML = "All photos go here";
+                } else if (this.activeTab === 'recent') {
+                    // Load most recent photos
+                    // content.innerHTML = "Most recent photos go here";
+                } else if (this.activeTab === 'deleted') {
+                    // Load deleted photos
+                    // content.innerHTML = "Deleted photos go here";
+                }
+            },
+            importPhotos() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.multiple = true;
+                input.addEventListener('change', async (event) => {
+                    const files = event.target.files;
+                    if (files.length > 0) {
+                        // Process each selected file
+                        for (let file of files) {
+                            // Example: Log the file name
+                            console.log('Importing:', file.name);
+                            // You can add logic to upload the file to the server or display it in the UI
+                        }
+                    }
+                });
+                input.click();
+            }
+        });
+
+        // Display user name from query parameters
         const urlParams = new URLSearchParams(window.location.search);
         const user = JSON.parse(decodeURIComponent(urlParams.get('user')));
-
-        // Display the user's name
         document.getElementById('user-name').textContent = user.name;
     </script>
 </body>
