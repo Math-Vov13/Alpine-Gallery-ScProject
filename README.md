@@ -16,7 +16,7 @@ Login page. Tout simplement.
 ## À propos
 
 - Objectif principal du projet:
-- Technologies ou outils utilisés: Framework Alpine, JS, 
+- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, PostgreSQL
 
 ---
 
@@ -25,8 +25,7 @@ Login page. Tout simplement.
 pour l'API, veuillez suivre les instructions dans ce [README.md](/api/README.md)
 
 ### Prérequis
-- VSC, AlpineJS,
-- Autres dépendances spécifiques ou optionelles : Firebase
+- VSC, AlpineJS, Python
 
 ### Étapes d'installation
 1. Clonez ce dépôt :
