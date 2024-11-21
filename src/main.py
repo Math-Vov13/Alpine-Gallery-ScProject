@@ -26,7 +26,7 @@ def index(request : Request):
         {"request": request}
     )
 
-@app.get("/board")
+@app.get("/dashboard")
 def dashboard(request: Request):
     return templates.TemplateResponse(
         "dashboard.html",
