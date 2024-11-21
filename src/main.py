@@ -16,7 +16,7 @@ app.add_middleware(
 
 )
 
-templates = Jinja2Templates("..\client")
+templates = Jinja2Templates("templates")
 
 
 @app.get("/")
@@ -33,8 +33,7 @@ def dashboard(request: Request):
         {"request": request}
     )
 
-
-app.mount("/css", StaticFiles(directory= "..\client\css"), name="static")
+app.mount("/css", StaticFiles(directory= "templates/css"), name="static")
 app.mount("/api/v1", subapp)
 
 
