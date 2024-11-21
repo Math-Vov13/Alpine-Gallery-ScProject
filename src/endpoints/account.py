@@ -5,27 +5,26 @@ from model.account_db import create_account, get_account
 from schemas.login import LoginModel
 from schemas.register import RegisterModel
 
-router = APIRouter(prefix= "/account", tags= ["Account"])
+router = APIRouter(prefix= "", tags= ["Account"])
 
 
 
 @router.post("/register",
           tags=["Account"],
           description="", status_code=status.HTTP_201_CREATED)
-async def register(data: RegisterModel):
-    await create_account(data)
-    return {"success": True, "message": "Account created successfully."}
+async def register(data_form: Annotated[RegisterModel, Form()]):
+    if not await create_account(data_form):
+        return JSONResponse({"success": False, "message": "Error!"})
+
+    return JSONResponse({"success": True, "message": "Account created successfully."})
 
 
 @router.post("/login",
           tags=["Account"],
           description="", status_code=status.HTTP_200_OK)
-async def login(
-    email: str = Form(...), 
-    password: str = Form(...)
-):
-    data = LoginModel(email=email, password=password)  # Construct the LoginModel manually
-    if not await get_account(data):
+async def login(data_form: Annotated[LoginModel, Form()]):
+    if not await get_account(data_form):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Not Found!")
-    return {"success": True, "message": "Login successful."}
+    
+    return JSONResponse({"success": True, "message": "Login successful."})

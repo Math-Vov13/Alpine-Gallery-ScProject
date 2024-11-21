@@ -24,13 +24,13 @@ poetry install
 
 3. lancer le serveur en localhost
 ```sh
-cd .\api
+cd .\src
 uvicorn main:app --reload
 ```
 
 ou avec poetry
 ```sh
-cd .\api
+cd .\src
 poetry run uvicorn main:app --reload
 ```
 

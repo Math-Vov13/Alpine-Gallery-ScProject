@@ -97,13 +97,16 @@
             }
         
             // Create a plain object for form data
-            const loginData = {
-                email: this.user.email,
-                password: this.user.password
-            };
+            // const loginData = {
+            //     email: this.user.email,
+            //     password: this.user.password
+            // };
+            const loginForm = new FormData();
+            loginForm.append('email', this.user.email);
+            loginForm.append('password', this.user.password);
         
             // Use Axios to send the data as x-www-form-urlencoded
-            axios.post('/login', new URLSearchParams(loginData))
+            axios.post('/login', loginForm)
                 .then(response => {
                     const data = response.data;
                     if (data.success) {
@@ -134,7 +137,12 @@
                 return;
             }
 
-            axios.post('/register', this.user)
+            const registerForm = new FormData();
+            registerForm.append('name', this.user.name);
+            registerForm.append('email', this.user.email);
+            registerForm.append('password', this.user.password);
+
+            axios.post('/register', registerForm)
                 .then(response => {
                     if (response.data.success) {
                         this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
