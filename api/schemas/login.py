@@ -7,8 +7,8 @@ class LoginModel(BaseModel):
     model_config = {"extra": "forbid"}
 
     email: str = Field(
-        title="Email", max_length=50, min_length=10
+        title="Email", examples=["test@gmail.com"], max_length=50
     )
     password: str = Field(
-        title="Password", max_length=50, min_length=5
+        title="Password", examples=["password"], max_length=50
     )

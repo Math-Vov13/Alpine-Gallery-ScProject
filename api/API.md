@@ -2,8 +2,11 @@
 
 Les différents endpoints avec les bonnes méthodes et les body attendus sont affichés ici !
 
+
+Account
+
 ```js
-POST api/v1/register
+POST api/v1/account/register
 {
     name = ''
     email = ''
@@ -12,9 +15,31 @@ POST api/v1/register
 ```
 
 ```js
-POST api/v1/login
+POST api/v1/account/login
 {
     email = ''
     password = ''
 }
+```
+
+
+Files Management
+
+```js
+GET api/v1/gallery
+```
+
+```js
+GET api/v1/gallery/{media_id}
+```
+
+```js
+POST api/v1/gallery
+{
+    FILE: FILE
+}
+```
+
+```js
+DELETE api/v1/gallery/{media_id}
 ```

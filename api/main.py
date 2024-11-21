@@ -1,11 +1,11 @@
-from fastapi import FastAPI, status, HTTPException, Form
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Annotated
+from fastapi.staticfiles import StaticFiles
 
-from model.account_db import create_account, get_account
-from schemas.login import LoginModel
-from schemas.register import RegisterModel
+from endpoints.account import router as routerAcc
+from endpoints.gallery import router as routerGall
+
 
 app = FastAPI(root_path="/api/v1", root_path_in_servers="/api/v1")
 app.add_middleware(
@@ -17,29 +17,15 @@ app.add_middleware(
 
 )
 
+
 @app.get("/")
 def index():
     return RedirectResponse(
         url="/index.html"  # Redirection to the website
     )
 
-@app.post("/register",
-          tags=["Account"],
-          description="", status_code=status.HTTP_201_CREATED)
-async def register(data: RegisterModel):
-    await create_account(data)
-    return {"success": True, "message": "Account created successfully."}
 
-@app.post("/login",
-          tags=["Account"],
-          description="", status_code=status.HTTP_200_OK)
-async def login(
-    email: str = Form(...), 
-    password: str = Form(...)
-):
-    data = LoginModel(email=email, password=password)  # Construct the LoginModel manually
-    if not await get_account(data):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Not Found!")
-    return {"success": True, "message": "Login successful."}
 
+app.mount("/static", StaticFiles(directory= "model\storage"), name="static")
+app.include_router(router= routerAcc)
+app.include_router(router= routerGall)
