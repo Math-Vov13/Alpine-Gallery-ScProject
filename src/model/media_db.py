@@ -5,25 +5,65 @@ from fastapi import UploadFile
 from schemas.gallery import *
 from model.media_json import media_json
 
-fakedb = []
+from typing import Optional
+import os
+
+fakedb : list[File_Schema] = []
 
 
+class media_utils:
+
+    @staticmethod
+    async def separate_path_and_ext(fullpath: str) -> tuple[str, str]:
+        """
+        Sépare le nom du fichier de son extension dans un t-uplet
+
+        :param fullpath: nom entier du fichier (chemin + extension)
+        :return: un t-uplet avec le nom du fichier en premier et son extension en deuxième
+        """
+
+        path, name = os.path.split(fullpath) # s'assurer que le chemin du fichier n'est pas compris dans le nom
+        return os.path.splitext(name)
+
+    @staticmethod
+    async def is_name_accepted(name: str) -> bool:
+        """
+        Le nom du fichier est accepté ou non
+
+        :param name: nom du fichier
+        :return: Oui ou Non
+        """
+        # TODO
+        return True
+
+    @staticmethod
+    async def get_ext_enum(ext: str) -> Optional[FileExtension_Enum]:
+        """
+        L'extension du fichier est acceptée ou non
+
+        :param ext: extension du fichier
+        :return: `extension` du fichier en enum ou `None`
+        """
+        try:
+            return FileExtension_Enum(str.lower(ext))
+        except:
+            return
 
 class media_db:
 
     @staticmethod
-    async def get_media_by_id(media_id: int) -> file:
+    async def get_media_by_id(media_id: int) -> Optional[File_Schema]:
         for i in fakedb:
             if i.id == media_id:
                 return i
     
     @staticmethod
-    async def get_all_files() -> list[file]:
+    async def get_all_files() -> list[File_Schema]:
         return fakedb
 
 
     @staticmethod
-    async def save_file(filedata: UploadFile) -> int:
+    async def save_file(name: Update_File_Schema, filedata: UploadFile) -> Optional[int]:
         """
         Sauvegarder un fichier dans le storage
 
@@ -32,9 +72,10 @@ class media_db:
         """
 
         # Ajoute le fichier dans la table
-        newfile = file(
+        newfile = File_Schema(
             id = len(fakedb) + 1,
-            name= filedata.filename,
+            ext= name.ext,
+            name= name.name,
             size= filedata.size,
             content_type= filedata.content_type
         )
@@ -45,7 +86,7 @@ class media_db:
         return newfile.id
 
     @staticmethod
-    async def update_file(media_id: int, newName: str) -> bool:
+    async def update_file(media_id: int, changes: Update_File_Schema) -> bool:
         """
         Modifier les informations d'un fichier
 
@@ -55,12 +96,13 @@ class media_db:
         """
 
         thisfile = await media_db.get_media_by_id(media_id= media_id)
-        thisfile.name = newName
+        thisfile.name = changes.name if changes.name else thisfile.name
+        thisfile.ext = changes.ext if changes.ext else thisfile.ext
 
         return True
 
     @staticmethod
-    async def get_path(media_id: str) -> str:
+    async def get_path(media_id: str) -> Optional[str]:
         """
         Récupérer le chemin du fichier
 

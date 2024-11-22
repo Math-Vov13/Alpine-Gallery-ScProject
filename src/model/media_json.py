@@ -20,7 +20,7 @@ class media_json:
         """
         pass
 
-    async def get_json(media_id: int) -> file_json:
+    async def get_json(media_id: int) -> Json_File_Schema:
         """
         Récupérer un json
 

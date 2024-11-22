@@ -16,7 +16,7 @@ Login page. Tout simplement. Avec exportation d'images et stockages de celles-ci
 ## À propos
 
 - Objectif principal du projet:
-- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, PostgreSQL/JSON
+- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, MySQL/JSON
 
 ---
 

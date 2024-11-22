@@ -33,7 +33,10 @@ def dashboard(request: Request):
         {"request": request}
     )
 
+
+
 app.mount("/css", StaticFiles(directory= "templates/css"), name="static")
+app.mount("/img", StaticFiles(directory= "templates/images"), name="static")
 app.mount("/api/v1", subapp)
 
 
