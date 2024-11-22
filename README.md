@@ -1,5 +1,5 @@
 # AlpineEFREI
-Login page. Tout simplement.
+Login page. Tout simplement. Avec exportation d'images et stockages de celles-ci.
 
 ---
 
@@ -16,7 +16,7 @@ Login page. Tout simplement.
 ## À propos
 
 - Objectif principal du projet:
-- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, PostgreSQL
+- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, PostgreSQL/JSON
 
 ---
 
