@@ -11,7 +11,7 @@ router = APIRouter(prefix= "/gallery", tags=["Gallery"])
 
 
 @router.get("/",
-            description= "")
+            description= "Get the list of all medias files")
 async def get_all_files(start: Annotated[int, Query()]= 1, step: Annotated[int, Query()]= 50):
     start -= 1 # retire 1 à start pour le début de la liste en python (commence par 0)
 
@@ -29,7 +29,7 @@ async def get_all_files(start: Annotated[int, Query()]= 1, step: Annotated[int, 
 
 
 @router.get("/{media_id}:{operation}",
-            description= "")
+            description= "Get a list of medias files")
 async def upload_file(media_id: int, operation: Literal["read", "upload"]):
     thisfile = await media_db.get_media_by_id(media_id= media_id)
     if not thisfile:
@@ -95,7 +95,7 @@ async def upload_file(media_id: int, operation: Literal["read", "upload"]):
 #     return {'file': file.decode()}
 
 @router.post("/",
-             description= "")
+             description= "Upload medias files")
 async def download_files(files: Annotated[list[UploadFile] | None, File(description="A file read as UploadFile")]):
     if not files:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -126,7 +126,7 @@ async def download_files(files: Annotated[list[UploadFile] | None, File(descript
 
 
 @router.put("/{media_id}", status_code= status.HTTP_200_OK,
-            description= "")
+            description= "Upload files metadatas")
 async def update_file(media_id: int, fullname: str):
     # Géré par FastAPI
     # if not fullname:
@@ -163,7 +163,7 @@ async def update_file(media_id: int, fullname: str):
 
 
 @router.delete("/{media_id}",
-               description= "")
+               description= "Delete all files")
 async def delete_files(media_id_list: list[int]= list[1]):
     if len(media_id_list) == 0:
         raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST,

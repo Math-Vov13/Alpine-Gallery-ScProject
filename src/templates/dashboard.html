@@ -9,81 +9,245 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <div class="dashboard-container" x-data="dashboard">
+    <div class="dashboard-container" x-data="dashboard()" x-init="init()">
         <!-- Title -->
         <header class="dashboard-header">
             <h1>Dashboard</h1>
-            <p>Welcome, <span id="user-name"></span></p>
+            <p>Welcome, <span id="user-name">User</span></p>
         </header>
-
+    
         <!-- Navbar -->
         <nav class="navbar">
-            <a href="/dashboard" class="nav-item" :class="{ active: activeTab === 'all' }" @click="changeTab('all')">All Photos</a>
-            <a href="/dashboard/recent" class="nav-item" :class="{ active: activeTab === 'recent' }" @click="changeTab('recent')">Most Recent Photos</a>
-            <a href="/dashboard/deleted" class="nav-item" :class="{ active: activeTab === 'deleted' }" @click="changeTab('deleted')">Deleted Photos</a>
+            <a href="#" class="nav-item" :class="{ active: activeTab === 'all' }" @click.prevent="changeTab('all')">All Photos</a>
+            <a href="#" class="nav-item" :class="{ active: activeTab === 'recent' }" @click.prevent="changeTab('recent')">Most Recent Photos</a>
+            <a href="#" class="nav-item" :class="{ active: activeTab === 'deleted' }" @click.prevent="changeTab('deleted')">Deleted Photos</a>
         </nav>
-
+    
         <!-- Content -->
-        <section id="content">
+        <div id="content" class="content">
+            <!-- Import Photos Card -->
             <div class="card-wrapper">
-                <div class="card import-card" @click="importPhotos()">
+                <div class="card import-card" @click="importMedias()">
                     <div class="plus-icon">+</div>
                     <p>Import Photos</p>
                 </div>
             </div>
-        </section>
+    
+            <div id="gallery" class="gallery">
+                <!-- Photos will be displayed here -->
+            </div>
+        </div>
     </div>
 
     <script>
-        // Dashboard Alpine.js Component
+        axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+
         const dashboard = () => ({
             activeTab: 'all',
+            imageIds: new Set(),  // Track imported image IDs to prevent duplication
+
+            // Function to change tabs and fetch photos
             changeTab(tab) {
                 this.activeTab = tab;
-                // Get the content container
-                const content = document.getElementById('content');
+                this.fetchAndDisplayImages();  // Fetch images based on the active tab
+            },
+        
+            // Function to fetch and display all images (used when the page loads)
+            async fetchAndDisplayImages() {
+                try {
+                    const response = await axios.get('/gallery/');
+                    console.log('API Response:', response.data);
                 
-                // Remove any existing content
-                while (content.firstChild) {
-                    content.removeChild(content.firstChild);
-                }
+                    const images = response.data.contents || [];
+                    const gallery = document.getElementById('gallery');
+                    gallery.innerHTML = ''; // Clear the gallery before adding new images
                 
-                // Load the appropriate content
-                if (this.activeTab === 'all') {
-                    // Load all photos
-                    // content.innerHTML = "All photos go here";
-                } else if (this.activeTab === 'recent') {
-                    // Load most recent photos
-                    // content.innerHTML = "Most recent photos go here";
-                } else if (this.activeTab === 'deleted') {
-                    // Load deleted photos
-                    // content.innerHTML = "Deleted photos go here";
+                    if (!images.length) {
+                        gallery.innerHTML = '<p>No images available.</p>';
+                        return;
+                    }
+
+                    // Loop through images and display them
+                    images.forEach(image => {
+                        if (!this.imageIds.has(image.id)) {
+                            this.imageIds.add(image.id); // Add image ID to the set to avoid duplication
+                            this.fetchImageAndDisplay(image.id);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching images:', error);
+                    const gallery = document.getElementById('gallery');
+                    gallery.innerHTML = `<p>Error fetching images: ${error.response?.status || 'Unknown error'} - ${
+                        error.response?.data?.message || error.message
+                    }</p>`;
                 }
             },
-            importPhotos() {
+
+            // Fetch a single image and display it
+            fetchImageAndDisplay(media_id) {
+                axios.get(`/gallery/${media_id}:read`, {
+                    responseType: 'blob'
+                })
+                .then((response) => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = URL.createObjectURL(response.data); // Create a local URL for the blob
+                    imgElement.alt = 'Image';
+                    imgElement.classList.add('image');
+                    
+                    const gallery = document.getElementById('gallery');
+                    gallery.appendChild(imgElement); // Add the image directly to the gallery
+                })
+                .catch((error) => {
+                    console.error('Error fetching image:', error);
+                });
+            },
+
+            // Import new photos
+            importMedias() {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
                 input.multiple = true;
+            
                 input.addEventListener('change', async (event) => {
                     const files = event.target.files;
+                
                     if (files.length > 0) {
-                        // Process each selected file
+                        const formData = new FormData();
                         for (let file of files) {
-                            // Example: Log the file name
-                            console.log('Importing:', file.name);
-                            // You can add logic to upload the file to the server or display it in the UI
+                            formData.append('files', file);
+                        }
+                        
+                        try {
+                            // Post the images to the server
+                            await axios.post('/gallery/', formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            });
+
+                            alert('Photos imported successfully!');
+                            this.fetchAndDisplayImages(); // Refresh the gallery with the newly imported images
+                        } catch (error) {
+                            console.error('Error importing photos:', error);
+                            alert('Error importing photos. Please try again.');
                         }
                     }
                 });
+            
                 input.click();
+            },
+        
+            init() {
+                this.fetchAndDisplayImages();
             }
         });
-
-        // Display user name from query parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const user = JSON.parse(decodeURIComponent(urlParams.get('user')));
-        document.getElementById('user-name').textContent = user.name;
     </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Figtree', sans-serif;
+            background-color: #f9f9f9;
+            color: #2c3e50;
+        }
+
+        .dashboard-container {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            text-decoration: none;
+            color: black;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-item.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .card-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .import-card {
+            background-color: #e7f3ff;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .plus-icon {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 16px;
+        }
+
+        .image {
+            width: 100%;
+            max-width: 300px; /* Set a max-width for the images */
+            height: 200px;    /* Fixed height */
+            object-fit: cover; /* Ensures the image covers the area without distortion */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add slight shadow to images */
+            cursor: pointer;
+        }
+        
+
+        .card p {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+    </style>
 </body>
 </html>
