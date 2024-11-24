@@ -5,7 +5,7 @@ from fastapi import UploadFile
 from schemas.gallery import *
 from model.media_json import media_json
 
-from typing import Optional
+from typing import Optional, AsyncGenerator
 import os
 
 fakedb : list[File_Schema] = []
@@ -14,7 +14,7 @@ fakedb : list[File_Schema] = []
 class media_utils:
 
     @staticmethod
-    async def separate_path_and_ext(fullpath: str) -> tuple[str, str]:
+    def separate_path_and_ext(fullpath: str) -> tuple[str, str]:
         """
         Sépare le nom du fichier de son extension dans un t-uplet
 
@@ -26,20 +26,22 @@ class media_utils:
         return os.path.splitext(name)
 
     @staticmethod
-    async def is_name_accepted(name: str) -> bool:
+    def get_name_accepted(name: str) -> str:
         """
-        Le nom du fichier est accepté ou non
+        Donne un nom de fichier valide
 
         :param name: nom du fichier
-        :return: Oui ou Non
+        :return: `nom` du fichier
         """
-        # TODO
-        return True
+
+        MAX_NAME_LENGTH = 25
+        
+        return str.replace(name, " ", "_")[:MAX_NAME_LENGTH]
 
     @staticmethod
-    async def get_ext_enum(ext: str) -> Optional[FileExtension_Enum]:
+    def get_ext_enum(ext: str) -> Optional[FileExtension_Enum]:
         """
-        L'extension du fichier est acceptée ou non
+        Donne une extension de fichier valide
 
         :param ext: extension du fichier
         :return: `extension` du fichier en enum ou `None`
@@ -98,22 +100,30 @@ class media_db:
         thisfile = await media_db.get_media_by_id(media_id= media_id)
         thisfile.name = changes.name if changes.name else thisfile.name
         thisfile.ext = changes.ext if changes.ext else thisfile.ext
+        thisfile.content_type = f"image/{thisfile.ext[1:]}" if changes.ext else thisfile.content_type
 
         return True
-
+    
     @staticmethod
-    async def get_path(media_id: str) -> Optional[str]:
-        """
-        Récupérer le chemin du fichier
-
-        :param media_id: id du fichier
-        :return: chemin du fichier
-        """
-
+    async def get_content(media_id: str) -> Optional[AsyncGenerator]:
         thisfile = await media_db.get_media_by_id(media_id= media_id)
         if not thisfile: return False
 
-        return thisfile
+        return await media_json.get_json(media_id)
+
+    # @staticmethod
+    # async def get_path(media_id: str) -> Optional[str]:
+    #     """
+    #     Récupérer le chemin du fichier
+
+    #     :param media_id: id du fichier
+    #     :return: chemin du fichier
+    #     """
+
+    #     thisfile = await media_db.get_media_by_id(media_id= media_id)
+    #     if not thisfile: return False
+
+    #     return thisfile
 
     @staticmethod
     async def delete_file(media_id: str) -> bool:

@@ -8,7 +8,7 @@ class FileExtension_Enum(StrEnum):
     PNG = ".png"    # Portable Network Graphics
     JPG = ".jpg"    # Joint Photographic Group
     JPEG = ".jpeg"  # Joint Photographic Experts Group
-    TIFF = ".tiff"  # Tagged Image File
+    TIFF = ".tiff"  # Tagged Image File Format
     PSD = ".psd"    # Photoshop Document
     AI = ".ai"      # Adobe Illustrator Document
     INDD = ".indd"  # Adobe Indesign Document
