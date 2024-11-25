@@ -37,6 +37,10 @@
 
     <script>
         axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+        const user_auth = {
+            username: "test@gmail.com",
+            password: "password"
+        }
     
         const dashboard = () => ({
             activeTab: 'all',
@@ -49,7 +53,9 @@
         
             async fetchAndDisplayImages() {
                 try {
-                    const response = await axios.get('/gallery/');
+                    const response = await axios.get('/gallery/', {
+                        auth: user_auth
+                    });
                     console.log('API Response:', response.data);
     
                     const images = response.data.contents || [];
@@ -91,7 +97,7 @@
             
                 const url = `/gallery/${mediaIdStr}:read`;
             
-                const response = await axios.get(url, { responseType: 'blob' });
+                const response = await axios.get(url, { responseType: 'blob', auth: user_auth });
             
                 // Ensure the response is a Blob
                 if (!(response.data instanceof Blob)) {
@@ -125,7 +131,7 @@
                 downloadButton.addEventListener('click', async () => {
                   try {
                     const downloadUrl = `/gallery/${mediaIdStr}:upload/`;
-                    const response = await axios.get(downloadUrl, { responseType: 'blob' });
+                    const response = await axios.get(downloadUrl, { responseType: 'blob', auth: user_auth });
                     const blob = new Blob([response.data], { type: 'image/jpeg' });
                     const urlObject = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -144,7 +150,7 @@
                 deleteButton.addEventListener('click', async () => {
                   try {
                     const deleteUrl = `/gallery/${mediaIdStr}`;
-                    await axios.delete(deleteUrl);
+                    await axios.delete(deleteUrl, {auth: user_auth});
                     this.fetchAndDisplayImages();
                   } catch (error) {
                     console.error("Error deleting image:", error);
@@ -167,7 +173,7 @@
             async downloadImage(media_id) {
               try {
                 const url = `/gallery/${media_id}:upload/`;
-                const response = await axios.get(url, { responseType: 'blob' });
+                const response = await axios.get(url, { responseType: 'blob',auth: user_auth });
                 const blob = new Blob([response.data], { type: 'image/jpeg' });
                 const urlObject = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -183,7 +189,7 @@
             async deleteImage(media_id) {
               try {
                 const url = `/gallery/${media_id}`;
-                await axios.delete(url);
+                await axios.delete(url, {auth: user_auth});
                 this.fetchAndDisplayImages();
               } catch (error) {
                 console.error("Error deleting image:", error);
@@ -206,7 +212,8 @@
     
                         try {
                             await axios.post('/gallery/', formData, {
-                                headers: { 'Content-Type': 'multipart/form-data' }
+                                headers: { 'Content-Type': 'multipart/form-data' },
+                                auth: user_auth
                             });
                             alert('Photos imported successfully!');
                             this.fetchAndDisplayImages();
