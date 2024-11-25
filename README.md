@@ -26,7 +26,7 @@
 pour l'API, veuillez suivre les instructions dans ce [README.md](/api/README.md)
 
 ### Prérequis
-- VSC, AlpineJS, Python, (reste des instructions dans [src/README.md](/src/README.md))
+- VSC, AlpineJS, Python, (reste des instructions dans [src/README.md](/src/README.md) ![image](https://github.com/user-attachments/assets/4d4ea758-7bfa-42ae-8ccc-681586a238c5))
 
 ### Étapes d'installation
 1. Clonez ce dépôt :
