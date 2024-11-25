@@ -14,7 +14,15 @@ Vous avez le schéma de l'API [ici](/api/API.md)
 ```sh
 python -m venv .venv
 ```
-2. Installer les dépendances (dans `AlpineEFREI-TeamZETA/`)
+
+2. Activer l'environnement
+```sh
+.venv\Scripts\activate.bat # ON WINDIWS
+source .venv/bin/activate # ON LINUS/MAC
+```
+
+
+3. Installer les dépendances (dans `AlpineEFREI-TeamZETA/`)
 ```sh
 pip install -r requirements.txt
 ```
@@ -24,7 +32,7 @@ pip install -r requirements.txt
 poetry install
 ```
 
-3. Lancer le serveur en localhost. <br>
+4. Lancer le serveur en localhost. <br>
 Exécutez les deux lignes suivantes :
 ```sh
 cd ./src
