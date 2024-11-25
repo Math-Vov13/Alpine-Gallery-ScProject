@@ -16,8 +16,8 @@
 
 ## À propos
 
-- Objectif principal du projet:
-- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, JSON
+- Objectif principal du projet: Créer une page login qui redirige l'utilisateur vers une app permettant l'exportation et le dépôt d'images sur notre site tout en utilisant AlpineJS et ses confrères.
+- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML/CSS, JSON
 
 ---
 
