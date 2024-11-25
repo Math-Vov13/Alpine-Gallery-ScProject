@@ -72,6 +72,7 @@ async def download_files(account: Annotated[str, Depends(get_current_username)],
     
     for file in files:
 
+        print(file.size)
         if file.size > CONFIG.MAX_FILE_SIZE:
             continue  # Le fichier est trop gros !
 
