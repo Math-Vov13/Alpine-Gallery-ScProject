@@ -1,5 +1,6 @@
 # AlpineEFREI
-Login page. Tout simplement. Avec exportation d'images et stockages de celles-ci.
+![image](https://github.com/user-attachments/assets/9a271b9d-8827-45cb-b39a-6946db86ddad) Projet donné pour le module Framework w/ AlpineJS : Site d'exportations d'images avec une page login. <br>
+![image](https://github.com/user-attachments/assets/854ecb11-dd3c-4acd-bbc1-00c2acbdd841) PHASE : Tests
 
 ---
 
@@ -16,7 +17,7 @@ Login page. Tout simplement. Avec exportation d'images et stockages de celles-ci
 ## À propos
 
 - Objectif principal du projet:
-- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, MySQL/JSON
+- Technologies ou outils utilisés: Framework Alpine, JS, Python, HTML5/CSS3, JSON
 
 ---
 
@@ -53,9 +54,9 @@ Lancez l'application : `npm start`
 
 ## Membres et rôles
 
-- **MARQUES DINIS Joao Gabriel**
-- **ACHOUCHI Rayane**
-- **VOVARD Mathéo**
+- **MARQUES DINIS Joao Gabriel** -- Login, Wireframe, Tests
+- **ACHOUCHI Rayane** -- Front End, Design, Adapts
+- **VOVARD Mathéo** -- Back End, BDD, API
 
 ---
 
