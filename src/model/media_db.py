@@ -4,6 +4,7 @@
 from fastapi import UploadFile
 from schemas.gallery import *
 from model.media_json import media_json
+from Core.Config import CONFIG
 
 from typing import Optional, AsyncGenerator
 import os
@@ -34,9 +35,7 @@ class media_utils:
         :return: `nom` du fichier
         """
 
-        MAX_NAME_LENGTH = 25
-        
-        return str.replace(name, " ", "_")[:MAX_NAME_LENGTH]
+        return str.replace(name, " ", "_")[:CONFIG.MAX_NAME_CHARS]
 
     @staticmethod
     def get_ext_enum(ext: str) -> Optional[FileExtension_Enum]:
@@ -46,6 +45,7 @@ class media_utils:
         :param ext: extension du fichier
         :return: `extension` du fichier en enum ou `None`
         """
+
         try:
             return FileExtension_Enum(str.lower(ext))
         except:
@@ -59,16 +59,24 @@ class media_db:
             if i.id == media_id:
                 return i
     
+
     @staticmethod
-    async def get_all_files() -> list[File_Schema]:
-        return fakedb
+    async def get_files_by_id(account_id: int) -> list[File_Schema]:
+        result = []
+        for i in fakedb:
+            if i.acc_id == account_id:
+                result.append(i)
+        return result
+
+
 
 
     @staticmethod
-    async def save_file(name: Update_File_Schema, filedata: UploadFile) -> Optional[int]:
+    async def save_file(account_id: int, name: Update_File_Schema, filedata: UploadFile) -> Optional[int]:
         """
         Sauvegarder un fichier dans le storage
 
+        :param account_id: id du compte
         :param content: contenu du fichier (en bytes)
         :return: media_id
         """
@@ -76,6 +84,7 @@ class media_db:
         # Ajoute le fichier dans la table
         newfile = File_Schema(
             id = len(fakedb) + 1,
+            acc_id= account_id,
             ext= name.ext,
             name= name.name,
             size= filedata.size,
@@ -87,54 +96,59 @@ class media_db:
 
         return newfile.id
 
+
     @staticmethod
-    async def update_file(media_id: int, changes: Update_File_Schema) -> bool:
+    async def update_file(account_id: int, media_id: int, changes: Update_File_Schema) -> bool:
         """
         Modifier les informations d'un fichier
 
+        :param account_id: id du compte
         :param media_id: id du fichier
         :param newName: nouveau nom du fichier
         :return: l'opération a réussie ou non
         """
 
         thisfile = await media_db.get_media_by_id(media_id= media_id)
+        if not thisfile: return False
+        if thisfile.acc_id != account_id: return False
+
         thisfile.name = changes.name if changes.name else thisfile.name
         thisfile.ext = changes.ext if changes.ext else thisfile.ext
         thisfile.content_type = f"image/{thisfile.ext[1:]}" if changes.ext else thisfile.content_type
 
         return True
-    
+
+
     @staticmethod
-    async def get_content(media_id: str) -> Optional[AsyncGenerator]:
+    async def get_content(account_id: int, media_id: int) -> Optional[AsyncGenerator]:
+        """
+        Récupérer le contenu d'un fichier
+
+        :param account_id: id du compte
+        :param media_id: id du fichier
+        :return: un générateur asynchrone ou rien
+        """
+        
         thisfile = await media_db.get_media_by_id(media_id= media_id)
-        if not thisfile: return False
+        if not thisfile: return
+        if thisfile.acc_id != account_id: return
 
         return await media_json.get_json(media_id)
 
-    # @staticmethod
-    # async def get_path(media_id: str) -> Optional[str]:
-    #     """
-    #     Récupérer le chemin du fichier
-
-    #     :param media_id: id du fichier
-    #     :return: chemin du fichier
-    #     """
-
-    #     thisfile = await media_db.get_media_by_id(media_id= media_id)
-    #     if not thisfile: return False
-
-    #     return thisfile
 
     @staticmethod
-    async def delete_file(media_id: str) -> bool:
+    async def delete_file(account_id: int, media_id: int) -> bool:
         """
         Supprime un fichier du storage
 
+        :param account_id: id du compte
+        :param media_id: id du fichier
         :return: l'opération a réussie ou non
         """
         
         thisfile = await media_db.get_media_by_id(media_id= media_id)
         if not thisfile: return False
+        if thisfile.acc_id != account_id: return False
         
         fakedb.remove(thisfile)
         await media_json.delete_json(thisfile.id)

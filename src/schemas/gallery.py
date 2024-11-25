@@ -18,15 +18,16 @@ class FileExtension_Enum(StrEnum):
 
 
 class File_Schema(BaseModel):
-    id : int
-    ext: FileExtension_Enum
-    name: str
-    size: int
-    content_type: str
+    id : int                    # id
+    acc_id: int                 # account id
+    ext: FileExtension_Enum     # file extension
+    name: str                   # file name
+    size: int                   # file size (bytes)
+    content_type: str           # request content_type
 
 class Update_File_Schema(BaseModel):
-    name: str
-    ext: FileExtension_Enum
+    name: str                   # file name
+    ext: FileExtension_Enum     # file extension
 
 class Json_File_Schema(BaseModel):
-    content: bytes
+    content: bytes              # File content (in bytes)

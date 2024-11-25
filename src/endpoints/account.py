@@ -2,8 +2,7 @@ from fastapi import APIRouter, status, HTTPException, Form
 from fastapi.responses import JSONResponse, RedirectResponse
 from typing import Annotated
 from model.account_db import create_account, get_account
-from schemas.login import LoginModel
-from schemas.register import RegisterModel
+from schemas.account import LoginModel, RegisterModel
 
 router = APIRouter(prefix= "", tags= ["Account"])
 
