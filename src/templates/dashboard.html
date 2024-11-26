@@ -5,25 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="icon" href="favicon.ico">
     <title>Dashboard</title>
 </head>
 <body>
+    <div id="toast-container" class="toast-container"></div>
     <div class="dashboard-container" x-data="dashboard()" x-init="init()">
-        <!-- Title -->
         <header class="dashboard-header">
             <h1>Dashboard</h1>
-            <p>Welcome, <span id="user-name">User</span></p>
+            <p>Welcome, <span id="user-name" x-text="user_auth.username"></span></p>
         </header>
     
-        <!-- Navbar -->
         <nav class="navbar">
             <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'all' }" @click.prevent="changeTab('all')">All Photos</a>
             <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'favorite' }" @click.prevent="changeTab('favorite')">Favorite Photos</a>
         </nav>
     
-        <!-- Content -->
         <div id="content" class="content">
-            <!-- Import Photos Card -->
             <div class="card-wrapper">
                 <div class="card import-card" @click="importMedias()">
                     <div class="plus-icon">+</div>
@@ -31,11 +29,24 @@
                 </div>
             </div>
     
-            <div id="gallery" class="gallery"></div>
+            <div id="gallery" class="gallery">
+                <div id="loading-spinner" x-show="isLoading" class="loading-spinner">Loading...</div>
+            </div>
         </div>
     </div>
 
     <script>
+
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
         axios.defaults.baseURL = 'http://localhost:8000/api/v1';
         const user_name = "{{ credentials.name }}"
         const user_auth = {
@@ -47,6 +58,7 @@
         document.getElementById('user-name').textContent = user_name;
     
         const dashboard = () => ({
+            isLoading: false,
             activeTab: 'all',
             imageIds: new Set(),
         
@@ -56,41 +68,34 @@
             },
         
             async fetchAndDisplayImages() {
-                try {
-                    const response = await axios.get('/gallery/', {
-                        auth: user_auth
-                    });
-                    console.log('API Response:', response.data);
-    
-                    const images = response.data.contents || [];
-                    const gallery = document.getElementById('gallery');
-                    gallery.innerHTML = ''; // Clear previous gallery content
-    
-                    if (!images.length) {
-                        gallery.innerHTML = '<p>No images available.</p>';
-                        return;
-                    }
-    
-                    // Generate image elements for each image in the gallery
-                    const imageElements = images.map((image) => {
-                        if (!this.imageIds.has(image.id)) {
-                            this.imageIds.add(image.id);
-                            return this.fetchImageAndDisplay(image.id);  // Fetch image and return its element
+                    this.isLoading = true; // Show the spinner while loading
+                    try {
+                        const response = await axios.get('/gallery/', { auth: user_auth });
+                        const images = response.data.contents || [];
+                    
+                        const fragment = document.createDocumentFragment();
+                    
+                        // Add only new images
+                        for (const image of images) {
+                            if (!this.imageIds.has(image.id)) {
+                                this.imageIds.add(image.id);
+                                const imgContainer = await this.fetchImageAndDisplay(image.id);
+                                if (imgContainer) {
+                                    fragment.appendChild(imgContainer);
+                                }
+                            }
                         }
-                    });
-    
-                    // Append all valid image elements to gallery
-                    const validElements = await Promise.all(imageElements);
-                    gallery.append(...validElements.filter(Boolean));
-                } catch (error) {
-                    console.error('Error fetching images:', error);
-                    const gallery = document.getElementById('gallery');
-                    gallery.innerHTML = `<p>Error fetching images: ${error.response?.status || 'Unknown error'} - ${
-                        error.response?.data?.message || error.message
-                    }</p>`;
-                }
-            },
-    
+                    
+                        const gallery = document.getElementById('gallery');
+                        gallery.appendChild(fragment); // Append new images without replacing existing ones
+                    } catch (error) {
+                        console.error('Error fetching images:', error);
+                        document.getElementById('gallery').innerHTML = `<p>Error fetching images: ${error.message}</p>`;
+                    } finally {
+                        this.isLoading = false; // Hide the spinner
+                    }
+                },
+
             async fetchImageAndDisplay(media_id) {
               try {
                 const mediaIdStr = String(media_id).trim();
@@ -99,17 +104,15 @@
                   throw new Error("Invalid media ID");
                 }
             
-                const url = `/gallery/${mediaIdStr}:read`;
+                const requestUrl = `/gallery/${mediaIdStr}:read`;
             
-                const response = await axios.get(url, { responseType: 'blob', auth: user_auth });
+                const response = await axios.get(requestUrl, { responseType: 'blob', auth: user_auth });
             
-                // Ensure the response is a Blob
                 if (!(response.data instanceof Blob)) {
                   console.error("Response data is not a Blob");
                   throw new Error("Response is not a Blob");
                 }
             
-                // Check if the Blob has content
                 if (!response.data || response.data.size === 0) {
                   console.error("Received empty Blob");
                   throw new Error("Received empty Blob");
@@ -117,18 +120,15 @@
             
                 const objectURL = URL.createObjectURL(response.data);
             
-                // Create image element
                 const imgElement = document.createElement('img');
                 imgElement.src = objectURL;
                 imgElement.alt = 'Image';
                 imgElement.classList.add('image');
             
-                // Create container for the image
                 const imgContainer = document.createElement('div');
                 imgContainer.classList.add('image-container');
                 imgContainer.appendChild(imgElement);
             
-                // Create download button
                 const downloadButton = document.createElement('button');
                 downloadButton.textContent = 'Download';
                 downloadButton.classList.add('download-btn');
@@ -154,21 +154,24 @@
                 deleteButton.addEventListener('click', async () => {
                   try {
                     const deleteUrl = `/gallery/${mediaIdStr}`;
-                    await axios.delete(deleteUrl, {auth: user_auth});
+                    await axios.delete(deleteUrl, { auth: user_auth });
+                    showToast("Image deleted successfully!", "success");
+                    // Properly clear gallery and refetch images
+                    this.imageIds.delete(media_id); // Remove from the set to allow re-adding
                     this.fetchAndDisplayImages();
                   } catch (error) {
+                    showToast("Error deleting image. Please try again.", "error");
                     console.error("Error deleting image:", error);
                   }
                 });
             
-                // Append delete button to container
                 imgContainer.appendChild(deleteButton);
             
-                // Append download button to container
                 imgContainer.appendChild(downloadButton);
             
                 return imgContainer;
               } catch (error) {
+                showToast("Error fetching or displaying image. Please try again.", "error");
                 console.error("Error fetching or displaying image:", error);
                 return null;
               }
@@ -177,7 +180,7 @@
             async downloadImage(media_id) {
               try {
                 const url = `/gallery/${media_id}:upload/`;
-                const response = await axios.get(url, { responseType: 'blob',auth: user_auth });
+                const response = await axios.get(url, { responseType: 'blob', auth: user_auth });
                 const blob = new Blob([response.data], { type: 'image/jpeg' });
                 const urlObject = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -185,20 +188,27 @@
                 a.download = `image_${media_id}.jpg`;
                 a.click();
                 URL.revokeObjectURL(urlObject);
+                showToast("Image downloaded successfully!", "success"); // Added toast
               } catch (error) {
+                showToast("Error downloading image. Please try again.", "error");
                 console.error("Error downloading image:", error);
               }
             },
 
+
             async deleteImage(media_id) {
               try {
                 const url = `/gallery/${media_id}`;
-                await axios.delete(url, {auth: user_auth});
-                this.fetchAndDisplayImages();
+                await axios.delete(url, { auth: user_auth });
+                showToast("Image deleted successfully!", "success"); // Toast on success
+                this.imageIds.delete(media_id); // Remove from the set
+                this.fetchAndDisplayImages(); // Refresh gallery
               } catch (error) {
+                showToast("Error deleting image. Please try again.", "error");
                 console.error("Error deleting image:", error);
               }
             },
+
     
             importMedias() {
                 const input = document.createElement('input');
@@ -219,11 +229,10 @@
                                 headers: { 'Content-Type': 'multipart/form-data' },
                                 auth: user_auth
                             });
-                            alert('Photos imported successfully!');
+                            showToast("Photos imported successfully!", "success");
                             this.fetchAndDisplayImages();
                         } catch (error) {
-                            console.error('Error importing photos:', error);
-                            alert('Error importing photos. Please try again.');
+                            showToast("Error importing photos. Please try again.", "error");
                         }
                     }
                 });
@@ -232,9 +241,12 @@
             },
     
             init() {
-                this.fetchAndDisplayImages();
-                this.changeTab('all');            
-            }
+                window.onload = () => {
+                    this.fetchAndDisplayImages();
+                    this.changeTab('all');
+                }         
+            },
+
         });
     </script>
 
@@ -246,6 +258,67 @@
             font-family: 'Figtree', sans-serif;
             background-color: #f9f9f9;
             color: #2c3e50;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 500px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeInOut 4s ease-in-out;
+        }
+
+        .toast-success {
+            background-color: #1cc440;
+        }
+
+        .toast-error {
+            background-color: #ff4d4f;
+        }
+
+        .toast-info {
+            background-color: #1890ff;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #1cc440;
+            height: 100px; /* or appropriate size */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .dashboard-container {
@@ -341,7 +414,7 @@
             margin-bottom: 10px;
         }
 
-        .gallery {
+        #gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 16px;
@@ -393,7 +466,6 @@
             background-color: #ff0000b0;
         }
 
-
         .delete-btn {
             background-color: #ff0000;
             color: white;
@@ -403,8 +475,7 @@
             cursor: pointer;
             margin-top: 40px;
         }
-
-        
     </style>
 </body>
 </html>
+
