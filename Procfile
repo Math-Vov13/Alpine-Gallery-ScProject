@@ -1,1 +1,1 @@
-web: hypercorn --bing 0.0.0.0:5000 --workers 2 src.main:app
+web: hypercorn -c server-config.toml src.main:app

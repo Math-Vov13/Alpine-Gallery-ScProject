@@ -1,10 +1,10 @@
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from model.account_db import get_account
-from schemas.account import *
+from src.model.account_db import get_account
+from src.schemas.account import *
 
 
 router = APIRouter()
@@ -27,6 +27,19 @@ async def get_current_username(
             headers={"WWW-Authenticate": "Basic"},
         )
     return thisuser.model_dump()
+
+
+async def get_credentials(
+    credentials: Annotated[HTTPBasicCredentials, Depends(security)],
+) -> Optional[Account_Schema_DB]:
+    print(credentials)
+    thisuser = await get_account(LoginModel(
+        email= credentials.username,
+        password= credentials.password
+    ))
+
+    if thisuser:
+        return thisuser
 
 
 # @router.get("/users/me")

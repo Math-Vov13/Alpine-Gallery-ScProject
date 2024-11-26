@@ -1,8 +1,14 @@
 from fastapi import APIRouter, status, HTTPException, Form
 from fastapi.responses import JSONResponse, RedirectResponse
+
 from typing import Annotated
-from model.account_db import create_account, get_account
-from schemas.account import LoginModel, RegisterModel
+from base64 import b64encode
+
+from src.Core.Config import CONFIG
+from src.model.account_db import create_account, get_account
+from src.schemas.account import LoginModel, RegisterModel
+
+
 
 router = APIRouter(prefix= "", tags= ["Account"])
 
@@ -26,4 +32,13 @@ async def login(data_form: Annotated[LoginModel, Form()]):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Not Found!")
     
-    return JSONResponse({"success": True, "message": "Login successful."})
+    credentials = b64encode(f"{data_form.email}:{data_form.password}".encode('utf-8')).decode('utf-8')
+
+    # return RedirectResponse(f"{CONFIG.get_BASE_URL()}/dashboard", status_code= 303,
+    #     headers={"Authorization": f"Basic {credentials}"}
+    # )
+    
+    response = JSONResponse({"success": True, "message": "Login successful."})
+    response.headers['X-Redirect'] = '/dashboard'
+
+    return response

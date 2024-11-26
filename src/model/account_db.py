@@ -4,7 +4,7 @@
 import secrets
 from typing import Optional
 
-from schemas.account import *
+from src.schemas.account import *
 
 fakedb : list[Account_Schema_DB] = []
 

@@ -2,9 +2,9 @@
 # Mathéo Vovard
 
 from fastapi import UploadFile
-from schemas.gallery import *
-from model.media_json import media_json
-from Core.Config import CONFIG
+from src.schemas.gallery import *
+from src.model.media_json import media_json
+from src.Core.Config import CONFIG
 
 from typing import Optional, AsyncGenerator
 import os
