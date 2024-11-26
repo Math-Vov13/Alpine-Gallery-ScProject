@@ -37,10 +37,14 @@
 
     <script>
         axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+        const user_name = "{{ credentials.name }}"
         const user_auth = {
-            username: "test@gmail.com",
-            password: "password"
+            username: "{{ credentials.username }}",
+            password: "{{ credentials.password }}"
         }
+
+
+        document.getElementById('user-name').textContent = user_name;
     
         const dashboard = () => ({
             activeTab: 'all',

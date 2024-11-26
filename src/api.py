@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
-from endpoints.account import router as routerAcc
-from endpoints.gallery import router as routerGall
-from endpoints.middlewares.auth import router as routerAuth
+from src.endpoints.account import router as routerAcc
+from src.endpoints.gallery import router as routerGall
+from src.endpoints.middlewares.auth import router as routerAuth
 
 subapp = FastAPI(root_path="/api/v1", root_path_in_servers="/api/v1")
 

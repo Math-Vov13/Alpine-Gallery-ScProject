@@ -109,8 +109,86 @@
                 .then(response => {
                     const data = response.data;
                     if (data.success) {
-                        this.loginMessage = data.message || "Connexion réussie ! Bienvenue";
-                        window.location.href = "dashboard";
+                        this.loginMessage = data.message || "Connexion réussie ! Redirection en cours...";
+
+                        const credentials = `${loginForm.get("email")}:${loginForm.get("password")}`
+                        const basicAuth = 'Basic ' + btoa(credentials);
+
+                        // Faites la requête vers /dashboard avec les credentials dans l'en-tête
+                        return axios.get(document.URL + 'dashboard', {
+                            headers: {
+                                'Authorization': basicAuth
+                            }
+                        })
+                        .then(dashboardResponse => {
+                            // Créer un nouvel élément pour le contenu
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = dashboardResponse.data;
+
+                            // Extraire et exécuter les scripts
+                            const scripts = tempDiv.getElementsByTagName('script');
+                            const styleSheets = tempDiv.getElementsByTagName('link');
+
+                            // Remplacer le contenu
+                            document.body.innerHTML = tempDiv.innerHTML;
+
+                            // Charger les nouveaux scripts
+                            Array.from(scripts).forEach(script => {
+                                const newScript = document.createElement('script');
+                                newScript.textContent = script.textContent;
+                                document.body.appendChild(newScript);
+                            });
+
+                            // Charger les nouvelles feuilles de style
+                            Array.from(styleSheets).forEach(sheet => {
+                                const link = document.createElement('link');
+                                link.rel = 'stylesheet';
+                                link.href = sheet.href;
+                                document.head.appendChild(link);
+                            });
+
+                            // Mise à jour de l'URL
+                            history.pushState(null, '', '/dashboard');
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de l\'accès au dashboard:', error);
+                        });
+                        // window.location.href = "dashboard";
+
+                        // console.log(response.headers)
+                        // const redirectUrl = '/dashboard' //response.headers.get('x-redirect');
+                        // console.log(redirectUrl)
+                        // if (redirectUrl) {
+                        //     window.location.href = redirectUrl;
+                        //     return;
+                        // }
+
+                        // Redirection vers le dashboard avec les credentials Basic Auth
+                        // fetch('/dashboard', {
+                        //     method: 'GET',
+                        //     headers: {
+                        //         'Authorization': 'Basic ' + btoa(`${loginForm.email}:${loginForm.password}`),
+                        //         'X-Requested-With': 'XMLHttpRequest'
+                        //     }
+                        // })
+                        // .then(response => {
+                        //     // Vérifier un header personnalisé indiquant la redirection
+                        //     const redirectUrl = response.headers.get('X-Redirect');
+                        //     if (redirectUrl) {
+                        //         window.location.href = redirectUrl;
+                        //         return;
+                        //     }
+                        // })
+
+                        // log.error("not auth!");
+                        
+                        // .then(dashboardResponse => {
+                        //     // Si la requête dashboard réussit, on redirige
+                        //     window.location.href = "/dashboard";
+                        //     return;
+                        // })
+
+                        // log.error("not auth!");
                     } else {
                         this.loginMessage = data.detail || "Une erreur est survenue.";
                         console.log(data.detail || "Une erreur est survenue.");
