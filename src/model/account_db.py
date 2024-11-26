@@ -4,13 +4,26 @@
 import secrets
 from typing import Optional
 
-from src.schemas.account import *
+from schemas.account import *
+from Core.Config import CONFIG
 
 fakedb : list[Account_Schema_DB] = []
 
 
 
+async def is_account_already_exists(email: str) -> bool:
+    for acc in fakedb:
+        if acc.email == email:
+            return True
+    return False
+
 async def create_account(form: RegisterModel) -> RegisterModel:
+    if len(fakedb) >= CONFIG.MAX_ACCOUNT:
+        return "Max account limit reached! (5)"
+    
+    if await is_account_already_exists(email= form.email):
+        return "This email is already used!"
+
     fakedb.append(Account_Schema_DB(
         id=len(fakedb),
         name= form.name,

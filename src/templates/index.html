@@ -57,8 +57,20 @@
 </main>
 
 <script>
+
+    function showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
     document.addEventListener('alpine:init', () => {
-    axios.defaults.baseURL = document.URL;
+    axios.defaults.baseURL = document.URL + "api/v1/";
     window.authForm = Alpine.data('authForm', () => ({
         isLogin: true,
         user: {
@@ -227,11 +239,13 @@
                         this.toggleForm();
                     } else {
                         this.registerMessage = response.data.message;
+                        showToast(response.data.message, "error");
                         console.log(response.data.message);
                     }
                 })
                 .catch(error => {
                     console.error(error.response.data || error.message);
+                    showToast("Unexpected error!", "error");
                     this.registerMessage = "Erreur inconnue.";
                 });
             this.clearForm();

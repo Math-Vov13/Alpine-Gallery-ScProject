@@ -1,7 +1,7 @@
 # API
 # Mathéo Vovard
 
-from src.schemas.gallery import *
+from schemas.gallery import *
 from typing import BinaryIO, Optional, AsyncGenerator
 import base64           # Base64 (bits)
 import os

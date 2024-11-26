@@ -47,7 +47,7 @@
                 toast.remove();
             }, 3000);
         }
-        axios.defaults.baseURL = document.URL + 'api/v1';
+        axios.defaults.baseURL = document.URL.replace("dashboard", "") + 'api/v1/';
         const user_name = "{{ credentials.name }}"
         const user_auth = {
             username: "{{ credentials.username }}",
@@ -225,14 +225,19 @@
                         }
     
                         try {
-                            await axios.post('/gallery/', formData, {
+                            const response = await axios.post('/gallery/', formData, {
                                 headers: { 'Content-Type': 'multipart/form-data' },
                                 auth: user_auth
                             });
+                            if (response.data.length == 0) {
+                                showToast("Error importing photos. Max size limit: 5Mo", "error");
+                                return;
+                            }
+
                             showToast("Photos imported successfully!", "success");
                             this.fetchAndDisplayImages();
                         } catch (error) {
-                            showToast("Error importing photos. Please try again.", "error");
+                            showToast("Error importing photos. You have exceeded the limit! (15)", "error");
                         }
                     }
                 });
