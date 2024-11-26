@@ -58,7 +58,7 @@
 
 <script>
     document.addEventListener('alpine:init', () => {
-    axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+    axios.defaults.baseURL = document.URL;
     window.authForm = Alpine.data('authForm', () => ({
         isLogin: true,
         user: {
@@ -106,7 +106,7 @@
             loginForm.append('password', this.user.password);
         
             // Use Axios to send the data as x-www-form-urlencoded
-            axios.post('/login', loginForm)
+            axios.post('login', loginForm)
                 .then(response => {
                     const data = response.data;
                     if (data.success) {
@@ -219,7 +219,7 @@
             registerForm.append('email', this.user.email);
             registerForm.append('password', this.user.password);
 
-            axios.post('/register', registerForm)
+            axios.post('register', registerForm)
                 .then(response => {
                     if (response.data.success) {
                         this.registerMessage = "Inscription réussie ! Vous pouvez maintenant vous connecter.";

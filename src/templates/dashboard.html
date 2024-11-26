@@ -47,7 +47,7 @@
                 toast.remove();
             }, 3000);
         }
-        axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+        axios.defaults.baseURL = document.URL + 'api/v1';
         const user_name = "{{ credentials.name }}"
         const user_auth = {
             username: "{{ credentials.username }}",
