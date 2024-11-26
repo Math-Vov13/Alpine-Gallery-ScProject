@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 
 from typing import Annotated, Optional
 
+from src.Core.Config import CONFIG
 from src.api import subapp
 from src.schemas.account import *
 from src.endpoints.middlewares.auth import get_credentials
@@ -14,8 +15,8 @@ from src.endpoints.middlewares.auth import get_credentials
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8000", "*"],
-    allow_credentials=True,
+    allow_origins=[CONFIG.get_BASE_URL()],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"]
 
