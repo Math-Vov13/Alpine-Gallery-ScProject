@@ -4,10 +4,10 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
 from typing import Annotated, Optional, Literal
 
-from src.Core.Config import CONFIG
-from src.model.media_db import media_db, media_utils
-from src.schemas.gallery import *
-from src.endpoints.middlewares.auth import get_current_username
+from Core.Config import CONFIG
+from model.media_db import media_db, media_utils
+from schemas.gallery import *
+from endpoints.middlewares.auth import get_current_username
 
 
 router = APIRouter(prefix= "/gallery", tags=["Gallery"])
