@@ -5,25 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="icon" href="favicon.ico">
     <title>Dashboard</title>
 </head>
 <body>
     <div class="dashboard-container" x-data="dashboard()" x-init="init()">
-        <!-- Title -->
         <header class="dashboard-header">
             <h1>Dashboard</h1>
             <p>Welcome, <span id="user-name">User</span></p>
         </header>
     
-        <!-- Navbar -->
         <nav class="navbar">
             <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'all' }" @click.prevent="changeTab('all')">All Photos</a>
             <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'favorite' }" @click.prevent="changeTab('favorite')">Favorite Photos</a>
         </nav>
     
-        <!-- Content -->
         <div id="content" class="content">
-            <!-- Import Photos Card -->
             <div class="card-wrapper">
                 <div class="card import-card" @click="importMedias()">
                     <div class="plus-icon">+</div>
@@ -31,7 +28,9 @@
                 </div>
             </div>
     
-            <div id="gallery" class="gallery"></div>
+            <div id="gallery" class="gallery">
+                <div id="loading-spinner" x-show="isLoading" class="loading-spinner">Loading...</div>
+            </div>
         </div>
     </div>
 
@@ -43,6 +42,7 @@
         }
     
         const dashboard = () => ({
+            isLoading: false,
             activeTab: 'all',
             imageIds: new Set(),
         
@@ -52,41 +52,34 @@
             },
         
             async fetchAndDisplayImages() {
-                try {
-                    const response = await axios.get('/gallery/', {
-                        auth: user_auth
-                    });
-                    console.log('API Response:', response.data);
-    
-                    const images = response.data.contents || [];
-                    const gallery = document.getElementById('gallery');
-                    gallery.innerHTML = ''; // Clear previous gallery content
-    
-                    if (!images.length) {
-                        gallery.innerHTML = '<p>No images available.</p>';
-                        return;
-                    }
-    
-                    // Generate image elements for each image in the gallery
-                    const imageElements = images.map((image) => {
-                        if (!this.imageIds.has(image.id)) {
-                            this.imageIds.add(image.id);
-                            return this.fetchImageAndDisplay(image.id);  // Fetch image and return its element
+                    this.isLoading = true; // Show the spinner while loading
+                    try {
+                        const response = await axios.get('/gallery/', { auth: user_auth });
+                        const images = response.data.contents || [];
+                    
+                        const fragment = document.createDocumentFragment();
+                    
+                        // Add only new images
+                        for (const image of images) {
+                            if (!this.imageIds.has(image.id)) {
+                                this.imageIds.add(image.id);
+                                const imgContainer = await this.fetchImageAndDisplay(image.id);
+                                if (imgContainer) {
+                                    fragment.appendChild(imgContainer);
+                                }
+                            }
                         }
-                    });
-    
-                    // Append all valid image elements to gallery
-                    const validElements = await Promise.all(imageElements);
-                    gallery.append(...validElements.filter(Boolean));
-                } catch (error) {
-                    console.error('Error fetching images:', error);
-                    const gallery = document.getElementById('gallery');
-                    gallery.innerHTML = `<p>Error fetching images: ${error.response?.status || 'Unknown error'} - ${
-                        error.response?.data?.message || error.message
-                    }</p>`;
-                }
-            },
-    
+                    
+                        const gallery = document.getElementById('gallery');
+                        gallery.appendChild(fragment); // Append new images without replacing existing ones
+                    } catch (error) {
+                        console.error('Error fetching images:', error);
+                        document.getElementById('gallery').innerHTML = `<p>Error fetching images: ${error.message}</p>`;
+                    } finally {
+                        this.isLoading = false; // Hide the spinner
+                    }
+                },
+
             async fetchImageAndDisplay(media_id) {
               try {
                 const mediaIdStr = String(media_id).trim();
@@ -95,17 +88,15 @@
                   throw new Error("Invalid media ID");
                 }
             
-                const url = `/gallery/${mediaIdStr}:read`;
+                const requestUrl = `/gallery/${mediaIdStr}:read`;
             
-                const response = await axios.get(url, { responseType: 'blob', auth: user_auth });
+                const response = await axios.get(requestUrl, { responseType: 'blob', auth: user_auth });
             
-                // Ensure the response is a Blob
                 if (!(response.data instanceof Blob)) {
                   console.error("Response data is not a Blob");
                   throw new Error("Response is not a Blob");
                 }
             
-                // Check if the Blob has content
                 if (!response.data || response.data.size === 0) {
                   console.error("Received empty Blob");
                   throw new Error("Received empty Blob");
@@ -113,18 +104,15 @@
             
                 const objectURL = URL.createObjectURL(response.data);
             
-                // Create image element
                 const imgElement = document.createElement('img');
                 imgElement.src = objectURL;
                 imgElement.alt = 'Image';
                 imgElement.classList.add('image');
             
-                // Create container for the image
                 const imgContainer = document.createElement('div');
                 imgContainer.classList.add('image-container');
                 imgContainer.appendChild(imgElement);
             
-                // Create download button
                 const downloadButton = document.createElement('button');
                 downloadButton.textContent = 'Download';
                 downloadButton.classList.add('download-btn');
@@ -157,10 +145,8 @@
                   }
                 });
             
-                // Append delete button to container
                 imgContainer.appendChild(deleteButton);
             
-                // Append download button to container
                 imgContainer.appendChild(downloadButton);
             
                 return imgContainer;
@@ -190,6 +176,7 @@
               try {
                 const url = `/gallery/${media_id}`;
                 await axios.delete(url, {auth: user_auth});
+                alert('Image deleted successfully!');
                 this.fetchAndDisplayImages();
               } catch (error) {
                 console.error("Error deleting image:", error);
@@ -228,8 +215,10 @@
             },
     
             init() {
-                this.fetchAndDisplayImages();
-                this.changeTab('all');            
+                window.onload = () => {
+                    this.fetchAndDisplayImages();
+                    this.changeTab('all');
+                }         
             }
         });
     </script>
@@ -242,6 +231,21 @@
             font-family: 'Figtree', sans-serif;
             background-color: #f9f9f9;
             color: #2c3e50;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #1cc440;
+            height: 100px; /* or appropriate size */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .dashboard-container {
@@ -337,7 +341,7 @@
             margin-bottom: 10px;
         }
 
-        .gallery {
+        #gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 16px;
@@ -389,7 +393,6 @@
             background-color: #ff0000b0;
         }
 
-
         .delete-btn {
             background-color: #ff0000;
             color: white;
@@ -399,8 +402,7 @@
             cursor: pointer;
             margin-top: 40px;
         }
-
-        
     </style>
 </body>
 </html>
+
