@@ -2,12 +2,13 @@
 # Mathéo Vovard
 
 from fastapi import UploadFile
-from schemas.gallery import *
-from model.media_json import media_json
-from Core.Config import CONFIG
-
 from typing import Optional, AsyncGenerator
 import os
+
+from src.schemas.gallery import *
+from src.model.media_json import media_json
+from src.Core.Config import CONFIG
+
 
 fakedb : list[File_Schema] = []
 
@@ -35,7 +36,7 @@ class media_utils:
         :return: `nom` du fichier
         """
 
-        return str.replace(name, " ", "_")[:CONFIG.MAX_NAME_CHARS]
+        return str.replace(name, " ", "_")[:CONFIG.MAX_FILE_NAME_CHARS]
 
     @staticmethod
     def get_ext_enum(ext: str) -> Optional[FileExtension_Enum]:

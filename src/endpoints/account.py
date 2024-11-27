@@ -4,9 +4,9 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from typing import Annotated
 from base64 import b64encode
 
-from Core.Config import CONFIG
-from model.account_db import create_account, get_account
-from schemas.account import LoginModel, RegisterModel
+from src.Core.Config import CONFIG
+from src.model.account_db import account_db
+from src.schemas.account import LoginModel, RegisterModel
 
 
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix= "", tags= ["Account"])
           tags=["Account"],
           description="", status_code=status.HTTP_201_CREATED)
 async def register(data_form: Annotated[RegisterModel, Form()]):
-    error_response = await create_account(data_form)
+    error_response = await account_db.create_account(data_form)
     if type(error_response) == str:
         return JSONResponse({"success": False, "message": error_response})
 
@@ -29,7 +29,7 @@ async def register(data_form: Annotated[RegisterModel, Form()]):
           tags=["Account"],
           description="", status_code=status.HTTP_200_OK)
 async def login(data_form: Annotated[LoginModel, Form()]):
-    if not await get_account(data_form):
+    if not await account_db.get_account(data_form):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Not Found!")
     

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" href="img/favicon.ico">
     <title>Dashboard</title>
 </head>
 <body>
@@ -13,7 +13,7 @@
     <div class="dashboard-container" x-data="dashboard()" x-init="init()" role="main">
         <header class="dashboard-header">
             <h1>Dashboard</h1>
-            <p>Welcome, <span id="user-name" x-text="user_auth.username" role="presentation"></span></p>
+            <p>Welcome, <span id="user-name" x-text="user_name" role="presentation"></span></p>
         </header>
     
         <nav class="navbar" role="navigation">
@@ -56,8 +56,8 @@
             password: "{{ credentials.password }}"
         }
 
-
-        document.getElementById('user-name').textContent = user_name;
+        console.log("Name:", user_name);
+        console.log("Auht:", user_auth);
     
         const dashboard = () => ({
             isLoading: false,

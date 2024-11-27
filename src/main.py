@@ -6,10 +6,10 @@ from fastapi.responses import RedirectResponse
 
 from typing import Annotated, Optional
 
-from Core.Config import CONFIG
-from api import subapp
-from schemas.account import *
-from endpoints.middlewares.auth import get_credentials
+from src.Core.Config import CONFIG
+from src.api import subapp
+from src.schemas.account import *
+from src.endpoints.middlewares.auth import get_credentials
 
 
 app = FastAPI()
@@ -22,7 +22,7 @@ app.add_middleware(
 
 )
 
-templates = Jinja2Templates("./templates")
+templates = Jinja2Templates("./src/templates")
 
 
 @app.get("/")
@@ -49,8 +49,8 @@ def dashboard(credentials: Annotated[Account_Schema_DB, Depends(get_credentials)
 
 
 
-app.mount("/css", StaticFiles(directory= "./templates/css"), name="static")
-app.mount("/img", StaticFiles(directory= "./templates/images"), name="static")
+app.mount("/css", StaticFiles(directory= "./src/templates/css"), name="static")
+app.mount("/img", StaticFiles(directory= "./src/templates/images"), name="static")
 app.mount("/api/v1", subapp)
 
 
