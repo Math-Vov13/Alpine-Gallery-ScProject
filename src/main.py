@@ -7,13 +7,20 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
-from typing import Annotated, Optional
 import os
+import asyncio
+import logging
+from typing import Annotated, Optional
 
 from src.Core.Config import CONFIG
 from src.api import subapp
 from src.schemas.account import *
 from src.endpoints.middlewares.auth import get_credentials
+
+
+# Configurer le module logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI()
@@ -58,8 +65,7 @@ app.mount("/img", StaticFiles(directory= "./src/templates/images"), name="static
 app.mount("/api/v1", subapp)
 
 
-
-if __name__ == "__main__":
+if __name__ == "src.main":
     config = Config()
     config.bind = [f"0.0.0.0:{os.getenv('PORT', 8000)}"]
-    serve(app, config)
+    asyncio.run(serve(app, config))
