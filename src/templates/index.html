@@ -16,42 +16,48 @@
 </head>
 <body>
 
-<main x-data="authForm" class="app">
+<main x-data="authForm" class="app" role="main" aria-label="Authentification">
+    <img src="./img/logo.png" alt="Logo" class="logo">
     <template x-if="isLogin">
-        <form @submit.prevent="handleLogin" class="form">
-            <h2>Login</h2>
+        <form @submit.prevent="handleLogin" class="form" role="form" aria-label="Se connecter">
+            <h2>Se connecter</h2>
             <div>
-                <label for="email">Email</label>
-                <input type="email" id="email" x-model="user.email">
+                <label for="email" aria-label="Email">Email</label>
+                <input type="email" id="email" x-model="user.email" aria-required="true" aria-invalid="false" aria-describedby="email-error">
+                <span id="email-error" class="error" aria-live="polite"></span>
             </div>
             <div>
-                <label for="password">Password</label>
-                <input type="password" id="password" x-model="user.password">
+                <label for="password" aria-label="Password">Password</label>
+                <input type="password" id="password" x-model="user.password" aria-required="true" aria-invalid="false" aria-describedby="password-error">
+                <span id="password-error" class="error" aria-live="polite"></span>
             </div>
-            <button type="submit">Login</button>
-            <p x-text="loginMessage" class="message"></p>
-            <p>Pas encore inscrit ? <a href="#" @click.prevent="toggleForm">S'inscrire</a></p>
+            <button type="submit" aria-label="Se connecter">Login</button>
+            <p x-text="loginMessage" class="message" role="alert" aria-live="assertive"></p>
+            <p>Pas encore inscrit ? <a href="#" @click.prevent="toggleForm" aria-label="S'inscrire">S'inscrire</a></p>
         </form>
     </template>
 
     <template x-if="!isLogin">
-        <form @submit.prevent="handleRegister" class="form">
-            <h2>Register</h2>
+        <form @submit.prevent="handleRegister" class="form" role="form" aria-label="S'inscrire">
+            <h2>S'inscrire</h2>
             <div>
-                <label for="name">Name</label>
-                <input type="text" id="name" x-model="user.name">
+                <label for="name" aria-label="Name">Name</label>
+                <input type="text" id="name" x-model="user.name" aria-required="true" aria-invalid="false" aria-describedby="name-error">
+                <span id="name-error" class="error" aria-live="polite"></span>
             </div>
             <div>
-                <label for="email">Email</label>
-                <input type="email" id="email" x-model="user.email">
+                <label for="email" aria-label="Email">Email</label>
+                <input type="email" id="email" x-model="user.email" aria-required="true" aria-invalid="false" aria-describedby="email-error">
+                <span id="email-error" class="error" aria-live="polite"></span>
             </div>
             <div>
-                <label for="password">Password</label>
-                <input type="password" id="password" x-model="user.password">
+                <label for="password" aria-label="Password">Password</label>
+                <input type="password" id="password" x-model="user.password" aria-required="true" aria-invalid="false" aria-describedby="password-error">
+                <span id="password-error" class="error" aria-live="polite"></span>
             </div>
-            <button type="submit">Register</button>
-            <p x-text="registerMessage" class="message"></p>
-            <p>Déjà inscrit ? <a href="#" @click.prevent="toggleForm">Se connecter</a></p>
+            <button type="submit" aria-label="S'inscrire">Register</button>
+            <p x-text="registerMessage" class="message" role="alert" aria-live="assertive"></p>
+            <p>Déjà inscrit ? <a href="#" @click.prevent="toggleForm" aria-label="Se connecter">Se connecter</a></p>
         </form>
     </template>
 </main>

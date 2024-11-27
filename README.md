@@ -72,7 +72,7 @@ Pour toute question, suggestion ou problème :
 <br>
 
 - **Nom** : ACHOUCHI Rayane
-- **Email** : achouchi.rayane@efrei.net
+- **Email** : rayane.achouchi@efrei.net
 - **GitHub** : [Github Rayane](https://github.com/RayaneChCh-dev/)
 
 <br>

@@ -9,28 +9,30 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <div id="toast-container" class="toast-container"></div>
-    <div class="dashboard-container" x-data="dashboard()" x-init="init()">
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+    <div class="dashboard-container" x-data="dashboard()" x-init="init()" role="main">
         <header class="dashboard-header">
             <h1>Dashboard</h1>
-            <p>Welcome, <span id="user-name" x-text="user_auth.username"></span></p>
+            <p>Welcome, <span id="user-name" x-text="user_auth.username" role="presentation"></span></p>
         </header>
     
-        <nav class="navbar">
-            <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'all' }" @click.prevent="changeTab('all')">All Photos</a>
-            <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'favorite' }" @click.prevent="changeTab('favorite')">Favorite Photos</a>
+        <nav class="navbar" role="navigation">
+            <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'all' }" @click.prevent="changeTab('all')"
+               role="link" aria-current="page" :aria-label="activeTab === 'all' ? 'All Photos (current tab)' : 'All Photos'">All Photos</a>
+            <a href="dashboard.html" class="nav-item" :class="{ active: activeTab === 'favorite' }" @click.prevent="changeTab('favorite')"
+               role="link" aria-current="page" :aria-label="activeTab === 'favorite' ? 'Favorite Photos (current tab)' : 'Favorite Photos'">Favorite Photos</a>
         </nav>
     
         <div id="content" class="content">
             <div class="card-wrapper">
-                <div class="card import-card" @click="importMedias()">
+                <div class="card import-card" @click="importMedias()" role="button" aria-label="Import Photos">
                     <div class="plus-icon">+</div>
                     <p>Import Photos</p>
                 </div>
             </div>
     
-            <div id="gallery" class="gallery">
-                <div id="loading-spinner" x-show="isLoading" class="loading-spinner">Loading...</div>
+            <div id="gallery" class="gallery" role="list">
+                <div id="loading-spinner" x-show="isLoading" class="loading-spinner" role="status" aria-live="polite">Loading...</div>
             </div>
         </div>
     </div>
@@ -419,7 +421,7 @@
             margin-bottom: 10px;
         }
 
-        #gallery {
+        .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 16px;
