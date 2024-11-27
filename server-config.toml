@@ -1,8 +1,8 @@
 # docu: https://luna.gitlab.io/hypercorn/how_to_guides/configuring.html#configuration-options
 
 [server]
-bind = ["0.0.0.0:8000"]    # Adresse IP et port
-workers = 2                # Nombre de processus travailleurs
+bind = "0.0.0.0:$PORT"     # Adresse IP et port
+workers = 4                # Nombre de processus travailleurs
 keep_alive = 10            # Temps d'attente avant de fermer une connexion inactive
 
 [logging]
