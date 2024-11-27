@@ -14,6 +14,10 @@ fakedb : list[Account_Schema_DB] = []
 class account_db:
 
     @staticmethod
+    def get_all_accounts():
+        return [i.model_dump() for i in fakedb]
+
+    @staticmethod
     async def is_account_already_exists(email: str) -> bool:
         for acc in fakedb:
             if acc.email == email:

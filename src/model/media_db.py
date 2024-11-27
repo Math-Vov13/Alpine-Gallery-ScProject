@@ -55,6 +55,10 @@ class media_utils:
 class media_db:
 
     @staticmethod
+    def get_all_files():
+        return [i.model_dump() for i in fakedb]
+
+    @staticmethod
     async def get_media_by_id(media_id: int) -> Optional[File_Schema]:
         for i in fakedb:
             if i.id == media_id:
