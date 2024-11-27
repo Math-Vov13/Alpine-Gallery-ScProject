@@ -52,14 +52,3 @@ def dashboard(credentials: Annotated[Account_Schema_DB, Depends(get_credentials)
 app.mount("/css", StaticFiles(directory= "./src/templates/css"), name="static")
 app.mount("/img", StaticFiles(directory= "./src/templates/images"), name="static")
 app.mount("/api/v1", subapp)
-
-
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(
-#         "app:app",
-#         host    = "0.0.0.0",
-#         port    = 8036, 
-#         reload  = True
-#     )
