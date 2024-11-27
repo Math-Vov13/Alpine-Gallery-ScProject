@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, HTTPException, Form
+from fastapi import APIRouter, status, HTTPException, Form, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from typing import Annotated
@@ -17,8 +17,8 @@ router = APIRouter(prefix= "", tags= ["Account"])
 @router.post("/register",
           tags=["Account"],
           description="", status_code=status.HTTP_201_CREATED)
-async def register(data_form: Annotated[RegisterModel, Form()]):
-    error_response = await account_db.create_account(data_form)
+async def register(data_form: Annotated[RegisterModel, Form()], request: Request):
+    error_response = await account_db.create_account(data_form, ip= request.client.host)
     if type(error_response) == str:
         return JSONResponse({"success": False, "message": error_response})
 

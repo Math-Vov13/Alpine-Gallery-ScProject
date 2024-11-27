@@ -41,3 +41,4 @@ class Account_Schema_DB(BaseModel):
     name: str                       # account name
     email: str                      # account email
     password: str                   # account password
+    ip_address: str                 # client ip

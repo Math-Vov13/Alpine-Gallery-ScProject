@@ -4,6 +4,7 @@
 from fastapi import UploadFile
 from typing import Optional, AsyncGenerator
 import os
+import random, time
 
 from src.schemas.gallery import *
 from src.model.media_json import media_json
@@ -14,6 +15,11 @@ fakedb : list[File_Schema] = []
 
 
 class media_utils:
+
+    @staticmethod
+    async def generate_id() -> int:
+        random.seed(time.time())
+        return random.randint(10000, 999999)
 
     @staticmethod
     def separate_path_and_ext(fullpath: str) -> tuple[str, str]:
@@ -91,7 +97,7 @@ class media_db:
 
         # Ajoute le fichier dans la table
         newfile = File_Schema(
-            id = len(fakedb) + 1,
+            id = await media_utils.generate_id(),
             acc_id= account_id,
             ext= name.ext,
             name= name.name,

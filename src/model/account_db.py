@@ -2,6 +2,7 @@
 # Mathéo Vovard
 
 import secrets
+import random, time
 from typing import Optional
 
 from src.schemas.account import *
@@ -12,6 +13,11 @@ fakedb : list[Account_Schema_DB] = []
 
 
 class account_db:
+
+    @staticmethod
+    async def generate_id() -> int:
+        random.seed(time.time())
+        return random.randint(10000, 999999)
 
     @staticmethod
     def get_all_accounts():
@@ -26,7 +32,7 @@ class account_db:
 
 
     @staticmethod
-    async def create_account(form: RegisterModel) -> RegisterModel:
+    async def create_account(form: RegisterModel, ip: str) -> RegisterModel:
         if len(fakedb) >= CONFIG.MAX_ACCOUNT:
             return f"Max account limit reached! ({CONFIG.MAX_ACCOUNT})"
         
@@ -37,10 +43,11 @@ class account_db:
             return f"Max characters reached for the name! ({CONFIG.MAX_ACCOUNT_NAME_CHARS})"
 
         fakedb.append(Account_Schema_DB(
-            id=len(fakedb),
+            id= await account_db.generate_id(),
             name= form.name,
             email= form.email,
-            password= form.password))
+            password= form.password,
+            ip_address= ip))
         
         return form
 
