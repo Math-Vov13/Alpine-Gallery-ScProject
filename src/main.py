@@ -1,3 +1,6 @@
+from hypercorn.config import Config
+from hypercorn.asyncio import serve
+
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -5,6 +8,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
 from typing import Annotated, Optional
+import os
 
 from src.Core.Config import CONFIG
 from src.api import subapp
@@ -52,3 +56,10 @@ def dashboard(credentials: Annotated[Account_Schema_DB, Depends(get_credentials)
 app.mount("/css", StaticFiles(directory= "./src/templates/css"), name="static")
 app.mount("/img", StaticFiles(directory= "./src/templates/images"), name="static")
 app.mount("/api/v1", subapp)
+
+
+
+if __name__ == "__main__":
+    config = Config()
+    config.bind = [f"0.0.0.0:{os.getenv('PORT', 8000)}"]
+    serve(app, config)
