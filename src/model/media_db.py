@@ -2,9 +2,9 @@
 # Mathéo Vovard
 
 from fastapi import UploadFile
-from src.schemas.gallery import *
-from src.model.media_json import media_json
-from src.Core.Config import CONFIG
+from schemas.gallery import *
+from model.media_json import media_json
+from Core.Config import CONFIG
 
 from typing import Optional, AsyncGenerator
 import os
@@ -80,6 +80,9 @@ class media_db:
         :param content: contenu du fichier (en bytes)
         :return: media_id
         """
+
+        if len(await media_db.get_files_by_id(account_id= account_id)) >= CONFIG.MAX_IMAGE_PER_ACCOUNT:
+            return
 
         # Ajoute le fichier dans la table
         newfile = File_Schema(

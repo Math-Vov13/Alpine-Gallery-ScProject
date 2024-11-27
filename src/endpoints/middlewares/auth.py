@@ -3,8 +3,8 @@ from typing import Annotated, Optional
 from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from src.model.account_db import get_account
-from src.schemas.account import *
+from model.account_db import get_account
+from schemas.account import *
 
 
 router = APIRouter()

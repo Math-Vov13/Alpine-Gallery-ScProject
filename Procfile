@@ -1,1 +1,1 @@
-web: hypercorn -c server-config.toml src.main:app
+worker: hypercorn -c server-config.toml src.main:app
